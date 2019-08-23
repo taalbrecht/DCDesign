@@ -1,12 +1,13 @@
-########################D-efficiency calc function######################################
-#Calculates determinant of supplied model matrix and scales to d-efficiency
-#
-#Output: vector(d_eff,vcov) where:
-#d_eff - d-efficiency of model matrix assuming linear model
-#vcov - the variance-covariance matrix of the model
-#
-#Inputs:
-#CurrentMatrix - model matrix with appropriate factor numerical coding as created by the model.matrix function. Data.frame formats not accepted
+#' Linear Model D-Optimality. Review for deprecation and removal.
+#'
+#' @param CurrentMatrix matrix - A model matrix with appropriate factor numerical coding as created by the model.matrix function. Data.frame formats not accepted
+#' @param returncov logical - Whether the variance-covariance matrix should be returned (requires additional calculation time)
+#'
+#' @return Either the D-Optimality of the model if returncov is FALSE or a list with elements d_eff (D-Optimality) and vcov (covariance matrix) if returncov is TRUE
+#' @description Calculates determinant of supplied model and raises it to the power of 1 / ncol(ModelMatrix) and divides the result by the number of rows in ModelMatrix
+#' @export
+#'
+#' @examples
 d_efficiencysimple <- function(CurrentMatrix, returncov = FALSE){
 
   #Calculate information matrix
