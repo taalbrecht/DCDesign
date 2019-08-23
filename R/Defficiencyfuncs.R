@@ -4,7 +4,7 @@
 #' @param returncov logical - Whether the variance-covariance matrix should be returned (requires additional calculation time)
 #'
 #' @return Either the D-Optimality of the model if returncov is FALSE or a list with elements d_eff (D-Optimality) and vcov (covariance matrix) if returncov is TRUE
-#' @description Calculates determinant of supplied model and raises it to the power of 1 / ncol(ModelMatrix) and divides the result by the number of rows in ModelMatrix
+#' @description Calculates determinant of supplied model and raises it to the power of 1 / ncol(ModelMatrix) and divides the result by the number of rows in ModelMatrix.
 #' @export
 #'
 #' @examples
@@ -32,16 +32,16 @@ d_efficiencysimple <- function(CurrentMatrix, returncov = FALSE){
   #Return objective function and determinants for both current models
   return(output)}
 
-###########################################################################################
 
-########################D-efficiency calc function######################################
-#Calculates determinant of supplied model matrix and scales to d-efficiency
-
-#Output: d-efficiency of model matrix assuming linear model
-
-#Inputs:
-#CurrentMatrix - model matrix with appropriate factor numerical coding as created by the model.matrix function. Data.frame formats not accepted
-
+#' Linear model D-Optimality update function. Review for deprecation and removal.
+#'
+#' @param CurrentMatrix matrix - A model matrix with appropriate factor numerical coding as created by the model.matrix function. Data.frame formats not accepted
+#'
+#' @return The D-Optimality of the model
+#' @description Calculates D-Optimality of the supplied model matrix by calculating the determinant and raising it to the power of 1 / ncol(ModelMatrix) then dividing the result by the number of rows in ModelMatrix.
+#' @export
+#'
+#' @examples
 d_efflinearupdate <- function(CurrentMatrix){
 
   #Calculate information matrix
