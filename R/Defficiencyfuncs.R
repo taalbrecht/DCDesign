@@ -77,7 +77,7 @@ d_efficiency <- function(CurrentMatrix, det_ref, input_formula, Input_range){
   CurrentMatrix <- data.frame(CurrentMatrix)
 
   #Get model matrix
-  modelmat <- model.matrix(input_formula,data = CurrentMatrix)
+  modelmat <- stats::model.matrix(input_formula,data = CurrentMatrix)
 
   #Standardize model matrix
   modelmat <- standardize_cols(modelmat, colnames(modelmat[,2:ncol(modelmat)]), Input_range = Input_range)
