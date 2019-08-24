@@ -1,14 +1,15 @@
-############################Convert to sum contrasts while preserving factor order####################
-
-#Converts a contrast to contrast sum while preserving factor order and applying appropriate column names
-
-#Inputs
-#factorin - vector of factor values
-#speclevels - vector of factor level names in desired order
-
-#Output
-#vector as a factor with contrast sum encoding that respects the order in speclevels
-
+#' Change factor coding to contr.sum
+#'
+#' @param factorin vector of factor values
+#' @param speclevels vector of factor level names in desired order
+#'
+#' @return vector as a factor with contrast sum encoding that respects the order in speclevels
+#' @export
+#'
+#' @description Converts a factor contrast to contr.sum while preserving factor order and applying appropriate column names.
+#'   Changes factor codings to contr.sum without changing global factor settings for R.
+#'
+#' @examples
 customcontrsum <- function(factorin, speclevels){
 
       #Correct factor levels to proper order
@@ -40,6 +41,7 @@ customcontrsum <- function(factorin, speclevels){
 #			format is matrix or data frame with column name for each column to be standardized and minimum value in first row and maximum value in second row.
 #reverse_standard - logical(TRUE, FALSE) indicating whether standardization should be reversed using Input_range. Default is FALSE
 
+#NOTE: Replace this function with built in scale function after first draft of package is done
 standardize_cols <- function(StartingMat, column_names, Input_range, reverse_standard = FALSE){
 
   #Initialize StandardMat by setting equal to StartingMat
@@ -95,10 +97,8 @@ standardize_cols <- function(StartingMat, column_names, Input_range, reverse_sta
 #Inputs:
 #input_formula - a formula (one or two sided) that contains all of the input variables to be modeled. format = x~ A + B + A:B + I(A^2/B), etc
 
+#NOTE: Replace this function with built in all.vars function after first draft of package is done
 list_input_variables <- function(input_formula){
-
-  #library(nlme)
-
 
   #Pull inputs only from input_formula and count
   Input_Func <- as.formula(paste(nlme::splitFormula(input_formula)))
@@ -113,17 +113,19 @@ list_input_variables <- function(input_formula){
 
 #########################################################################################################################
 
-#################################Function to return min and max range for algebraic combinations of base variables###################
 
-#Calculates: Max and min for algebraic combination of base variables when range of base variables is known
-
-#Output: matrix(AlgebraicRange), where Algebraic_Range is a matrix with column names matching algebraic combos on input side of formula. Row 1 = min and row 2 = max.
-
-#Inputs, required:
-#base_var_range - matrix or data frame listing the range of base input variables used for algebraic model. Names must match those used in algebraic_formula
-#			format is matrix or data frame with column name for each base input variable then minimum value in first row and maximum value in second row.
-#algebraic_formula - a formula (one or two sided) that contains all of the algebraic combos to be evaluated. format = x~ A + B + A:B + I(A^2/B)+ I(ln(A)), etc
-
+#' Find minimum and maximum for functions of base variables
+#'
+#' @param base_var_range matrix or data frame listing the range of base input variables used for algebraic model. Names must match those used in algebraic_formula
+#'   format is matrix or data frame with column name for each base input variable then minimum value in first row and maximum value in second row.
+#' @param algebraic_formula a formula (one or two sided) that contains all of the algebraic combos to be evaluated. format = x~ A + B + A:B + I(A^2/B)+ I(ln(A)), etc
+#'
+#' @return matrix(AlgebraicRange), where Algebraic_Range is a matrix with column names matching algebraic combos on input side of formula. Row 1 = min and row 2 = max.
+#' @export
+#'
+#' @description Function to return min and max range for functions of base variables. Calculations are based on provided range of base variables.
+#'
+#' @examples
 algebraic_range <- function(base_var_range, algebraic_formula){
 
 #   #Old code that does not work with factors and continuous variables
@@ -189,6 +191,25 @@ algebraic_range <- function(base_var_range, algebraic_formula){
 #################################################################################################################################
 
 
+#' Fast flexible filling design
+#'
+#' @param inputranges matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)
+#' @param constrainnodes matrix with nodes of constraining manifold (hull) within rectangular inputranges space. Should be a matrix of nodes as produced by the convhulln function from the geometry package. It is ok to provide more points than necessary to construct the bounding manifold; they will simply be removed during the manifold construction process. Only works for convex manifolds for now
+#' @param k integer - number of points to create for design
+#' @param nrand integer, default = NULL - number of random points to generate per design point. If not supplied, 100 random points per design point will be used. If k0means algorithm doesn't converge, try adding more random starts
+#' @param scaleinputs logical, default = TRUE - whether the input ranges
+#' @param clustermethod character, default = "kmeans" - method used to identify clusters, can be ward (ward clustering) or kmeans (kmeans clustering)
+#' @param centermethod character, default = "centroid" - method used to identify design point from each cluster. Options are:
+#'   centroid - creates a point from each cluster at the centroid
+#'   MaxPro - selects the points by choosing the point from each cluster that optimizes the maximum projection criteria
+#'
+#' @return
+#'   \item{DesignMatrix}{A matrix of the resulting design with column names corresponding to variable names in inputranges}
+#' @export
+#'
+#' @description Function to create fast flexible filling designs that uses clustering to identify design points that should be evenly spread across design space
+#'
+#' @examples
 fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scaleinputs = TRUE, clustermethod = "kmeans", centermethod = "centroid"){
   #Function for fast flexible filling designs that uses clustering to identify design points that should be evenly spread across design space
   #INPUTS:
@@ -345,12 +366,31 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
 
 }
 
-###############################################################################################
-#Function to determine if candidate points are inside, outside, or on the surface of a n-dimensional manifold (hull)
-#Use to determine if randomly generated points lie inside or outside of constraint boundaries
-#Requires the MASS and geometry packages
-#A similar function may eventually be added to the geometry package (currently developed and being added to the github version, just waiting for publication to CRAN)
 
+#' Check if candidate points are inside, outside, or on the surface of a n-dimensional convex manifold (hull)
+#'
+#' @param testpts An n x p matrix of points to test for hull membership. n data points, in p dimensions.
+#'   If you have many points to test, it is most efficient to call this function once with the entire set.
+#' @param calpts An m x p array of vertices of the convex hull, as produced by the geometry::convhulln function.
+#' @param hull (OPTIONAL) tessellation (or triangulation) generated by convhulln.
+#'   If hull is left empty or not supplied, then it will be generated which will take some extra time but will provide the same results.
+#' @param tol Tolerance on the tests for inclusion in the convex hull.
+#'   You can think of tol as the distance a point may possibly lie outside the hull, and still be perceived as on the surface of the hull.
+#'   Because of numerical slop nothing can ever be done exactly here. I might guess a semi-intelligent value of tol to be tol = 1.e-13*mean(abs(calpts(:)))
+#'   In higher dimensions, the numerical issues of floating point arithmetic will probably suggest a larger value of tol.
+#'
+#' @return A vector of integers of length n where each entry corresponds to the same row in testpts. Value meanings are:
+#'   1 = inside hull
+#'   -1 = outside hull
+#'   0 = on hull (to precision indicated by tol)
+#'
+#' @export
+#'
+#' @description Use to determine if candidate points lie within or on the surface of a provided convex manifold.
+#'   A similar function may eventually be added to the geometry package (currently developed and being added to the github version, just waiting for publication to CRAN).
+#'   Based on Matlab code by John D'Errico 04 Mar 2006 (Updated 30 Oct 2006) \url{http://www.mathworks.com/matlabcentral/fileexchange/10226-inhull} with some modifications for greatly improved speed.
+#'
+#' @examples
 inhull <- function(testpts, calpts, hull=convhulln(calpts), tol=mean(mean(abs(as.matrix(calpts))))*sqrt(.Machine$double.eps)) {
   #++++++++++++++++++++
   # R implementation of the Matlab code by John D'Errico 04 Mar 2006 (Updated 30 Oct 2006)
@@ -448,6 +488,20 @@ inhull <- function(testpts, calpts, hull=convhulln(calpts), tol=mean(mean(abs(as
 
 ########################################################################
 #Function to take a square range and a constraining set of hull points and fill the space with a uniform distribution of points
+
+#' Fill a convex hull with a uniform random sample of points
+#'
+#' @param n integer - number of random points to generate
+#' @param inputranges matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)
+#' @param constrainnodes matrix with nodes of constraining manifold (hull) within rectangular inputranges space. Should be a matrix of nodes as produced by the convhulln geometry package. It is ok to provide more points than necessary to construct the bounding manifold; they will simply be removed during the manifold construction process. Only works for convex manifolds for now
+#'
+#' @return
+#'   \item{UniformFill}{Matrix containing uniformly randomly distributed points in the supplied manifold. Column names are transferred from inputranges}
+#' @export
+#'
+#' @description This function uses a hyper-rectangular proposal region and a constraining set of hull points to fill the convex hull with a uniform distribution of points
+#'
+#' @examples
 convexuniformfill <- function(n, inputranges, constrainnodes){
   #INPUTS:
   ##n - integer - number of random points to generate
@@ -493,11 +547,23 @@ return(list("UniformFill" = randmat))
 
 }
 
-######################################################################################
-#Function to find maximum projection design from set of candidate points and cluster IDs
 
-##TODO# ADD IN LOSS FUNCITON THAT USES nloptim (same approach and gradient function as MaxPro) AND DISTANCE FROM HULL AS ADDITIVE LOSS WITH EXTRA WEIGHT ON DISTANCE FROM HULL TO CREATE NUMERICAL OPTIMZIER THAT WILL WORK FOR MAXPRO
-###DOUBLE CHECK LOSS FUNCTION. ALSO SEEMS TO HAVE ISSUE WITH GETTING STUCK IN LOCAL MINIMA SO WILL NOT WORK VERY WELL WITHOUT CLUSTERING FIRST.
+#' Create a maximum projection (MaxPro) design
+#'
+#' @param candmat matrix - A matrix of candidate points in the design space. Ideally should be a random uniform fill of the design space constructed using \code{\link{convexuniformfill}}
+#' @param npoints integer - The number of points to use in the MaxPro design
+#' @param groupid vector - group membership ID for all points in candmat
+#'
+#' @return
+#'   \item{DesignMat}{A matrix with the resulting MaxPro design}
+#'   \item{ObjFunc}{The value of the objective function being minimized to find the MaxPro design}
+#' @export
+#'
+#' @description Function to find maximum projection design from set of candidate points and cluster IDs. Either npoints or groupid must be provided.
+#'   TODO: ADD IN LOSS FUNCITON THAT USES nloptim (same approach and gradient function as MaxPro) AND DISTANCE FROM HULL AS ADDITIVE LOSS WITH EXTRA WEIGHT ON DISTANCE FROM HULL TO CREATE NUMERICAL OPTIMZIER THAT WILL WORK FOR MAXPRO
+#'   DOUBLE CHECK LOSS FUNCTION. ALSO SEEMS TO HAVE ISSUE WITH GETTING STUCK IN LOCAL MINIMA SO WILL NOT WORK VERY WELL WITHOUT CLUSTERING FIRST.
+#'
+#' @examples
 candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
 
   if(is.null(npoints) & is.null(groupid)){
@@ -580,9 +646,23 @@ candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
 }
 
 
-###########################################################################
-#Function to return an estimate of the moment matrix of the design space based on numeric approximation based on a random uniform population of the design space
-#Note, this moment matrix estimate is typically used to calculate I optimality
+#' Calculate moment matrix of design space
+#'
+#' @param inputranges matrix - A matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)
+#' @param modelformula formula - The formula of the model to use for calculating moment matrix. Terms must match column names of inputranges otherwise model matrix cannot be calculated appropriately
+#' @param constrainnodes matrix - A matrix with nodes of constraining manifold (hull) within rectangular inputranges space.
+#'   Should be a matrix of nodes as produced by the as produced by \code{\link[geometry]{convhulln}}.
+#'   It is ok to provide more points than necessary to construct the bounding manifold; they will simply be removed during the manifold construction process. Only works for convex manifolds for now
+#' @param n integer - The number of points to use to numerically approximate moment matrix integral. It is suggested that at least 1000 points per factor in model formula be used
+#'
+#' @return
+#'   \item{MomentMatrix}{The moment matrix}
+#' @export
+#'
+#' @description Approximates the moment matrix of the design space calculated using numeric approximation of moment matrix based on uniform distribution of random points specified by the inputs.
+#'   This moment matrix estimate is typically used to calculate I-Optimality for I-Optimal design creation
+#'
+#' @examples
 designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 1000*ncol(attributes(terms(modelformula))$factors)){
   #INPUTS:
   ##inputranges - matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)
