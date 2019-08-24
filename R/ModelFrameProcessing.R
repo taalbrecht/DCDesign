@@ -513,40 +513,40 @@ convexuniformfill <- function(n, inputranges, constrainnodes){
   #OUTPUTS:
   #UniformFill - matrix containing uniformly randomly distributed points in the supplied manifold. Column names are transferred from inputranges
 
-#Initialize candidate point frame
-randmat <- matrix(ncol = ncol(inputranges), nrow = 0)
+  #Initialize candidate point frame
+  randmat <- matrix(ncol = ncol(inputranges), nrow = 0)
 
-#Set placeholder count for
-goodnodes <- c()
+  #Set placeholder count for
+  goodnodes <- c()
 
-#Set starting scale factor (percent chance a candidate point will be in the hull)
-scalefactor <- 1.1*prod(apply(inputranges, MARGIN = 2, function(x) max(x) - min(x)))/convhulln(constrainnodes, options = "FA")$vol
+  #Set starting scale factor (percent chance a candidate point will be in the hull)
+  scalefactor <- 1.1*prod(apply(inputranges, MARGIN = 2, function(x) max(x) - min(x)))/convhulln(constrainnodes, options = "FA")$vol
 
-#Keep generating new data until enough points have been generated in the convex manifold
-while(nrow(randmat) < n){
+  #Keep generating new data until enough points have been generated in the convex manifold
+  while(nrow(randmat) < n){
 
-  #Randomly generate data
-  randmat <- rbind(randmat, apply(inputranges, MARGIN = 2, function(x) runif((n-nrow(randmat))*scalefactor, min = min(x), max = max(x))))
+    #Randomly generate data
+    randmat <- rbind(randmat, apply(inputranges, MARGIN = 2, function(x) runif((n-nrow(randmat))*scalefactor, min = min(x), max = max(x))))
 
-  #Determine which randomly generated points are in or on the surface of the convex manifold
-  outvec <- inhull(testpts = randmat, calpts = constrainnodes)
+    #Determine which randomly generated points are in or on the surface of the convex manifold
+    outvec <- inhull(testpts = randmat, calpts = constrainnodes)
 
-  #Convert to logical indicating TRUE if the point is in or on the surface of the convex manifold
-  goodnodes <- outvec != -1
+    #Convert to logical indicating TRUE if the point is in or on the surface of the convex manifold
+    goodnodes <- outvec != -1
 
-  #Only keep points in manifold
-  randmat <- randmat[goodnodes,]
+    #Only keep points in manifold
+    randmat <- randmat[goodnodes,]
 
-  #Update scale factor (ratio of candidate points to points actually in manifold * safety factor)
-  scalefactor <- 1.2*length(goodnodes)/sum(goodnodes)
+    #Update scale factor (ratio of candidate points to points actually in manifold * safety factor)
+    scalefactor <- 1.2*length(goodnodes)/sum(goodnodes)
 
-}
+  }
 
-#Remove extra valid points
-randmat <- randmat[1:(n),]
+  #Remove extra valid points
+  randmat <- randmat[1:(n),]
 
-#Return uniformly distributed random fill
-return(list("UniformFill" = randmat))
+  #Return uniformly distributed random fill
+  return(list("UniformFill" = randmat))
 
 }
 
