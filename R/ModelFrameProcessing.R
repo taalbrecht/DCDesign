@@ -272,12 +272,12 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
     # randmat <- randmat[1:(nrand*k),]
 
 
-    }else{
+  }else{
 
-      #Randomly generate data subject to rectangular constraints
-      randmat <- apply(inputranges, MARGIN = 2, function(x) runif(nrand*k, min = min(x), max = max(x)))
+    #Randomly generate data subject to rectangular constraints
+    randmat <- apply(inputranges, MARGIN = 2, function(x) runif(nrand*k, min = min(x), max = max(x)))
 
-    }
+  }
 
 
   #Scale inputs before calculating clusters if desired
@@ -299,10 +299,10 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
     outmat[,] <- 0
 
     if(centermethod == "centroid"){
-    #Extract centroids
-    for(i in 1:k){
-    outmat[i,] <- apply(randmat[groupid == i,], MARGIN = 2, mean)
-    }
+      #Extract centroids
+      for(i in 1:k){
+        outmat[i,] <- apply(randmat[groupid == i,], MARGIN = 2, mean)
+      }
 
     }
 
@@ -311,7 +311,7 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
       outmat <- candsetmaxpro(randmat, groupid = groupid)$DesignMat
 
 
-          }
+    }
 
   }
 
@@ -322,7 +322,7 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
     groupid <- kmeans(randmat, centers = k, iter.max = 100)
 
     if(centermethod == "centroid"){
-    #Extract centroids
+      #Extract centroids
       outmat <- groupid$centers
 
     }
