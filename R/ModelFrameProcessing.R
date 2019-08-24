@@ -696,5 +696,5 @@ designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 100
   #Calculate moment matrix
   MomentMatrix <- (t(fx)%*%fx)/n
 
-    return(list("MomentMatrix" = MomentMatrix))
+  return(list("MomentMatrix" = MomentMatrix))
 }
