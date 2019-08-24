@@ -17,7 +17,10 @@ Opt out choices, if included, should be coded as a row of all zeroes for every p
 \item{info_mat}{the information matrix for all other questions in the model matrix}
 }
 \value{
-numeric value for d-efficiency
+\item{d_eff}{D-Optimality of the design}
+  \item{p_var}{The product of all selection probabilities for this choice set}
+  \item{info_mat}{Information matrix of the choice set.}
+  \item{p_set}{A vector of the probability of selection of each profile in the choice set.}
 }
 \description{
 Fast d-efficiency update function for use during search algorithms to reduce search time. Requires supplied information matrix for all questions not included

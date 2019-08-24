@@ -22,8 +22,10 @@ If not supplied, parameter estimates will be assumed equal to zero for all param
 }
 \value{
 list containing:
-  d_error - d-error of supplied design with respect to parameter estimates
-  covmat - covariance matrix
+  \item{d_eff}{D-Optimality of the design}
+  \item{info_mat}{Information matrix of the design}
+  \item{p_var}{The sum of the product of the probability of selection of each choice set in the design.}
+  \item{probvect}{A vector of the probability of selection of each profile in the design.}
 }
 \description{
 Calculates d-error of supplied model matrix. Will also calculate probability centered d-error if vector of parameter estimates is supplied

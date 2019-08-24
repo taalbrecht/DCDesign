@@ -20,8 +20,8 @@ sourcequestion - the previous questionid ("game") that the alternative ("team") 
 \item{updatevect}{(optional) vector of questionids in matchupframe that should be updated based on the supplied winprobs vector and previous occurprobs vector. If not passed, all occurrence probabilities will be updated.}
 }
 \value{
-vector of probability of each matchup occurring
+\item{occurprobs}{A vector of the probability of each choice set occurring.}
 }
 \description{
-Calculates the probability of occurrence for every possible matchup in a choice tournament bracket
+Calculates the probability of occurrence for every possible matchup in a choice tournament bracket.
 }

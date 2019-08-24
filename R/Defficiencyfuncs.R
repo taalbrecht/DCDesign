@@ -111,8 +111,10 @@ d_efficiency <- function(CurrentMatrix, det_ref, input_formula, Input_range){
 #' @param returninfomat whether to return the covariance matrix as well. Default is FALSE
 #'
 #' @return list containing:
-#'   d_error - d-error of supplied design with respect to parameter estimates
-#'   covmat - covariance matrix
+#'   \item{d_eff}{D-Optimality of the design}
+#'   \item{info_mat}{Information matrix of the design}
+#'   \item{p_var}{The sum of the product of the probability of selection of each choice set in the design.}
+#'   \item{probvect}{A vector of the probability of selection of each profile in the design.}
 #' @description Calculates d-error of supplied model matrix. Will also calculate probability centered d-error if vector of parameter estimates is supplied
 #' @export
 #'
@@ -197,7 +199,11 @@ d_effchoice <- function(CurrentMatrix, altvect, paramestimates = NULL, returninf
 #' @param paramestimates standardized effect estimates for each effect (column) of model matrix corresponding to standardized model matrix.
 #' @param info_mat the information matrix for all other questions in the model matrix
 #'
-#' @return numeric value for d-efficiency
+#' @return
+#'   \item{d_eff}{D-Optimality of the design}
+#'   \item{p_var}{The product of all selection probabilities for this choice set}
+#'   \item{info_mat}{Information matrix of the choice set.}
+#'   \item{p_set}{A vector of the probability of selection of each profile in the choice set.}
 #' @description Fast d-efficiency update function for use during search algorithms to reduce search time. Requires supplied information matrix for all questions not included
 #' @export
 #'
@@ -246,8 +252,9 @@ d_effchoiceupdate <- function(CurrentMatrix, paramestimates, info_mat = 0){
 #' @param occurprobs (optional) vector of pre-existing chance of each matchup occurring. Should be 1 for any questionid that does not have a sourcequestion in matchupframe. If not passed, the entire occurrence probability vector will be generated from scratch.
 #' @param updatevect (optional) vector of questionids in matchupframe that should be updated based on the supplied winprobs vector and previous occurprobs vector. If not passed, all occurrence probabilities will be updated.
 #'
-#' @return vector of probability of each matchup occurring
-#' @description Calculates the probability of occurrence for every possible matchup in a choice tournament bracket
+#' @return
+#'   \item{occurprobs}{A vector of the probability of each choice set occurring.}
+#' @description Calculates the probability of occurrence for every possible matchup in a choice tournament bracket.
 #' @export
 #'
 #' @examples
