@@ -127,10 +127,13 @@ list_input_variables <- function(input_formula){
 #'
 #' @examples
 algebraic_range <- function(base_var_range, algebraic_formula){
+  #Calculates: Max and min for algebraic combination of base variables when range of base variables is known
+  #INPUTS
+  ##base_var_range - matrix or data frame listing the range of base input variables used for algebraic model. Names must match those used in algebraic_formula
+  ##			format is matrix or data frame with column name for each base input variable then minimum value in first row and maximum value in second row.
+  ##algebraic_formula - a formula (one or two sided) that contains all of the algebraic combos to be evaluated. format = x~ A + B + A:B + I(A^2/B)+ I(ln(A)), etc
 
-#   #Old code that does not work with factors and continuous variables
-#   #Pull names of each algebraic term on input side of formula
-#   algebraic_input_terms <- colnames(attr(terms(algebraic_formula),"factors"))
+  #OUTPUT: matrix(AlgebraicRange), with column names matching model matrix terms on input side of formula. Row 1 = min and row 2 = max.
 
   #Pull names of each algebraic term and factor combination on input side of formula
   algebraic_input_terms <- colnames(model.matrix(algebraic_formula, base_var_range), "factors")[-1]
@@ -179,10 +182,10 @@ algebraic_range <- function(base_var_range, algebraic_formula){
     AlgebraicRange["minimum",algebraic_input_terms[i]] <- min(unlist(lapply(apply(trymat, MARGIN = 1, optim, fn = optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect), "[", "value")))
     AlgebraicRange["maximum",algebraic_input_terms[i]] <- max(unlist(lapply(apply(trymat, MARGIN = 1, optim, fn = optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect, control = list(fnscale = -1)), "[", "value")))
 
-#     #Old, less accurate code that doesn't find min and max for factor combinations
-#     #Find minimum value for algebraic term
-#     AlgebraicRange["minimum",algebraic_input_terms[i]] <- optim(minvect, optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect)$value
-#     AlgebraicRange["maximum",algebraic_input_terms[i]] <- optim(maxvect, optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect, control = list(fnscale = -1))$value
+    #     #Old, less accurate code that doesn't find min and max for factor combinations
+    #     #Find minimum value for algebraic term
+    #     AlgebraicRange["minimum",algebraic_input_terms[i]] <- optim(minvect, optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect)$value
+    #     AlgebraicRange["maximum",algebraic_input_terms[i]] <- optim(maxvect, optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect, control = list(fnscale = -1))$value
   }
 
   #Return Min and Max for Algebraic Functions
