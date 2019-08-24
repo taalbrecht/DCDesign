@@ -12,7 +12,7 @@
 #'   fourth column containing alpha value used
 #'   fifth column containing beta value used
 #' @description Calculates power to detect each supplied coefficient difference based on supplied alpha and beta error.
-#' @export data frame with the following:
+#' @export
 #'
 #' @examples
 vcovpower <- function(vcovmat, detectdiff, test_alpha = 0.05, test_beta = 0.2){
