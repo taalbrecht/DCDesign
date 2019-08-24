@@ -593,7 +593,7 @@ candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
     designvec <- sample(c(1:nrow(D0)), npoints)
 
   }else{
-  designvec <- sapply(c(1:npoints), function(x) sample(which(groupid == x), size = 1))
+    designvec <- sapply(c(1:npoints), function(x) sample(which(groupid == x), size = 1))
   }
 
   objfunc <- Inf
