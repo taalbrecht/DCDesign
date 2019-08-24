@@ -56,25 +56,21 @@ d_efflinearupdate <- function(CurrentMatrix){
   #Return d-efficiency
   return(((det_calc)^(1/(ncol(CurrentMatrix))))/nrow(CurrentMatrix))}
 
-###########################################################################################
 
-
-########################Optimization Calc Function, D-Optimal######################################
-#Calculates determinant ratio based on supplied det_ref. Will convert a base data.frame/matrix to a model matrix and standardize based on supplied input_formula and Input_range.
-
-#Output: vector(d_eff,det_calc) where:
-#d_eff - d-efficiency of
-#det_calc - determinanat of info matrix created using CurrentMatrix and input_formula
-
-#Inputs:
-#CurrentMatrix - either a matrix or data.frame of base variables only (ex: Col for A, B, C) that will be converted to a model matrix using input_formula
-#det_ref - reference determinant for calculation of d_efficiency. Should be max attainable determinant of info matrix
-#input_formula - one-sided formula (inputs only) for model to calculate d efficiency from. Format = ~ A + B + A:B + I(A/B^2), etc
-####required if CurrentMatrix is a data frame of base variables that needs to be converted to a model matrix
-#Input_range - matrix or data frame listing the range of columns used for standardization. Column names must match input_formula term names
-####format is matrix or data frame with column in Input_range matching each column name in CurrentMatrix and minimum value in first row and maximum value in second row.
-
-
+#' D-efficiency calculation
+#'
+#' @param CurrentMatrix either a matrix or data.frame of base variables only (ex: Col for A, B, C) that will be converted to a model matrix using input_formula
+#' @param det_ref reference determinant for calculation of d_efficiency. Should be max attainable determinant of info matrix
+#' @param input_formula one-sided formula (inputs only) for model to calculate d efficiency from. Format = ~ A + B + A:B + I(A/B^2), etc
+#' required if CurrentMatrix is a data frame of base variables that needs to be converted to a model matrix
+#' @param Input_range matrix or data frame listing the range of columns used for standardization. Column names must match input_formula term names.
+#' format is matrix or data frame with column in Input_range matching each column name in CurrentMatrix and minimum value in first row and maximum value in second row.
+#'
+#' @return vector(d_eff,det_calc) where the first element is the d-efficiency and the second element is the determinanat of info matrix created using CurrentMatrix and input_formula
+#' @description Calculates determinant ratio based on supplied det_ref. Will convert a base data.frame/matrix to a model matrix and standardize based on supplied input_formula and Input_range.
+#' @export
+#'
+#' @examples
 d_efficiency <- function(CurrentMatrix, det_ref, input_formula, Input_range){
 
   #Convert input data to data.frame in case it was passed as matrix or array
@@ -102,26 +98,25 @@ d_efficiency <- function(CurrentMatrix, det_ref, input_formula, Input_range){
   #Return objective function and determinants for both current models
   return(returnvect)}
 
-###########################################################################################
 
-
-########################D-efficiency calc function for discrete choice experiments######################################
-#Calculates d-error of supplied model matrix. Will also calculate probability centered d-error if vector of parameter estimates is supplied
-
-#Output: list containing:
-#d_error - d-error of supplied design with respect to parameter estimates
-#covmat - covariance matrix
-
-#Inputs:
-#CurrentMatrix - model matrix as created by model.matrix function with all continuous parameters centered and standardized
-#### and appropriate factor numerical coding (generated using contr.sum for factors) as created by the model.matrix function.
-####Data.frame formats not accepted
-####Opt out choices, if included, should be coded as a row of all zeroes for every parameter
-#altvect - vector with integer corresponding to each row that indicates which choice set it is a member of
-#paramestimates - estimates for each effect (column) of model matrix sized corresponding to standardized model matrix.
-####If not supplied, parameter estimates will be assumed equal to zero for all parameters
-#returninfomat - whether to return the covariance matrix as well. Default is FALSE
-
+#' D-Error for multinomial logit model
+#'
+#' @param CurrentMatrix model matrix as created by model.matrix function with all continuous parameters centered and standardized
+#'   and appropriate factor numerical coding (generated using contr.sum for factors) as created by the model.matrix function.
+#'   Data.frame formats not accepted
+#'   Opt out choices, if included, should be coded as a row of all zeroes for every parameter
+#' @param altvect vector with integer corresponding to each row that indicates which choice set it is a member of
+#' @param paramestimates estimates for each effect (column) of model matrix sized corresponding to standardized model matrix.
+#'   If not supplied, parameter estimates will be assumed equal to zero for all parameters
+#' @param returninfomat whether to return the covariance matrix as well. Default is FALSE
+#'
+#' @return list containing:
+#'   d_error - d-error of supplied design with respect to parameter estimates
+#'   covmat - covariance matrix
+#' @description Calculates d-error of supplied model matrix. Will also calculate probability centered d-error if vector of parameter estimates is supplied
+#' @export
+#'
+#' @examples
 d_effchoice <- function(CurrentMatrix, altvect, paramestimates = NULL, returninfomat = FALSE){
 
   #get all unique alternate names
@@ -193,21 +188,20 @@ d_effchoice <- function(CurrentMatrix, altvect, paramestimates = NULL, returninf
   return(output)}
 
 
-###########################################################################################
-
-
-########################D-efficiency update function for single question for multinomial logit model#######################################Updates d-efficiency of supplied sub-model matrix and information matrix.
-#Fast d-efficiency update function for use during search algorithms to reduce search time. Requires supplied information matrix for all questions not included
-#Output: numeric value for d-efficiency
-
-#Inputs:
-#CurrentMatrix - subsection of model matrix for one question only. Should include all alternatives for that questionas created by the model.matrix function with all continuous parameters centered and standardized
-#### and appropriate factor numerical coding (generated using contr.sum for factors) as created by the model.matrix function.
-####Data.frame formats not accepted
-####Opt out choices, if included, should be coded as a row of all zeroes for every parameter
-#paramestimates - standardized effect estimates for each effect (column) of model matrix corresponding to standardized model matrix.
-#info_mat - the information matrix for all other questions in the model matrix
-
+#' D-efficiency update function for single question for multinomial logit model
+#'
+#' @param CurrentMatrix subsection of model matrix for one question only. Should include all alternatives for that questionas created by the model.matrix function with all continuous parameters centered and standardized
+#'   and appropriate factor numerical coding (generated using contr.sum for factors) as created by the model.matrix function.
+#'   Data.frame formats not accepted
+#'   Opt out choices, if included, should be coded as a row of all zeroes for every parameter
+#' @param paramestimates standardized effect estimates for each effect (column) of model matrix corresponding to standardized model matrix.
+#' @param info_mat the information matrix for all other questions in the model matrix
+#'
+#' @return numeric value for d-efficiency
+#' @description Fast d-efficiency update function for use during search algorithms to reduce search time. Requires supplied information matrix for all questions not included
+#' @export
+#'
+#' @examples
 d_effchoiceupdate <- function(CurrentMatrix, paramestimates, info_mat = 0){
 
   #Get position of intercept column
@@ -241,24 +235,22 @@ d_effchoiceupdate <- function(CurrentMatrix, paramestimates, info_mat = 0){
   return(list(d_eff = det_calc^(1/ncol(CurrentMatrix)), p_var = p_var, info_mat = info_mat, p_set = p_set))}
 
 
-###########################################################################################
-
-
-########################Occurrence probability calculation function for tournament matchup frames#######################################
-#
-#Output: vector of probability of each matchup occurring
-
-#Inputs:
-#matchupframe - data frame with the following columns:
-###matrixrowid - unique number corresponding to the alternative ("team") as it progresses through the tournament.
-###questionid - number of the matchup ("game").
-###uniquesetid - unique number assigned to each potential matchup. There will be multiple potential matchups for each possible questionid
-###sourcequestion - the previous questionid ("game") that the alternative ("team") must have won to arrive in this questionid ("game"). Should be 0 for the first questionid ("game") for each alternative ("team")
-
-#winprobs - vector of win probabilities for each alternative in matchupframe. Must have length equal to number of rows in matchupframe
-#occurprobs - (optional) vector of pre-existing chance of each matchup occurring. Should be 1 for any questionid that does not have a sourcequestion in matchupframe. If not passed, the entire occurrence probability vector will be generated from scratch.
-#updatevect - (optional) vector of questionids in matchupframe that should be updated based on the supplied winprobs vector and previous occurprobs vector. If not passed, all occurrence probabilities will be updated.
-
+#' Matchup probability for choice tournament
+#'
+#' @param matchupframe data frame with the following columns:
+#'   matrixrowid - unique number corresponding to the alternative ("team") as it progresses through the tournament.
+#'   questionid - number of the matchup ("game").
+#'   uniquesetid - unique number assigned to each potential matchup. There will be multiple potential matchups for each possible questionid
+#'   sourcequestion - the previous questionid ("game") that the alternative ("team") must have won to arrive in this questionid ("game"). Should be 0 for the first questionid ("game") for each alternative ("team")
+#' @param winprobs vector of win probabilities for each alternative in matchupframe. Must have length equal to number of rows in matchupframe
+#' @param occurprobs (optional) vector of pre-existing chance of each matchup occurring. Should be 1 for any questionid that does not have a sourcequestion in matchupframe. If not passed, the entire occurrence probability vector will be generated from scratch.
+#' @param updatevect (optional) vector of questionids in matchupframe that should be updated based on the supplied winprobs vector and previous occurprobs vector. If not passed, all occurrence probabilities will be updated.
+#'
+#' @return vector of probability of each matchup occurring
+#' @description Calculates the probability of occurrence for every possible matchup in a choice tournament bracket
+#' @export
+#'
+#' @examples
 matchupprobs <- function(matchupframe, winprobs, occurprobs = NA, updatevect = NA){
 
   #Initialize occurrence probability vector and update vector if occurrence probability vector was not provided
@@ -292,6 +284,3 @@ matchupprobs <- function(matchupframe, winprobs, occurprobs = NA, updatevect = N
     }
   }
   return(list(occurprobs = occurprobs))}
-
-
-###########################################################################################
