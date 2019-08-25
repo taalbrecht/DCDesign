@@ -698,3 +698,54 @@ designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 100
 
   return(list("MomentMatrix" = MomentMatrix))
 }
+
+
+#' Calculates scaled model matrix
+#'
+#' @param inputmat matrix - design to evaluate in terms of variables in inputranges
+#' @param inputranges matrix - matrix with one column per variable in inputmat and minimum and maximum values in row 1 and 2, respectively
+#' @param baseformula formula - no-intercept formula of base algebraic combination variables
+#' @param baseformrange  matrix - matrix with one column per variable in baseformula and minimum and maximum values in row 1 and 2, respectively
+#' @param altterms vector, optional - names of alternate terms to replace terms in baseformula with so that the model matrix function will work. If not provided, returns scaled model matrix for baseformula
+#' @param fullformulareterm formula, optional - full model formula with terms replaced by altterms elements. If not provided, returns scaled model matrix for baseformula
+#'
+#' @return Scaled model matrix for the design
+#' @export
+#'
+#' @description Function to return properly scaled model matrix based off of input matrix of base variables.
+#'   This function is compatible with constructed variables as well (e.g. I(A/B)).
+#'
+#' @examples
+Xmat <- function(inputmat, inputranges, baseformula, baseformrange, altterms = NULL, fullformulareterm = NULL){
+  #INPUTS:
+  ##inputmat - matrix - design to evaluate in terms of variables in inputranges
+  ##inputranges - matrix - matrix with one column per variable in inputmat and minimum and maximum values in row 1 and 2, respectively
+  ##baseformula - formula - no-intercept formula of base algebraic combination variables
+  ##baseformrange - matrix - matrix with one column per variable in baseformula and minimum and maximum values in row 1 and 2, respectively
+  ##altterms - vector, optional - names of alternate terms to replace terms in baseformula with so that the model matrix function will work. If not provided, returns scaled model matrix for baseformula
+  ##fullformulareterm - formula, optional - full model formula with terms replaced by altterms elements. If not provided, returns scaled model matrix for baseformula
+
+  #Create model matrix: X
+  #Translate to second formula space
+  X <- model.matrix(baseformula, data.frame(scale(
+    scale(inputmat, center = FALSE, scale = 2/apply(inputranges, MARGIN = 2, function(x) x[2] - x[1])),
+    center = -apply(inputranges, MARGIN = 2, mean), scale = FALSE)))
+
+  #Scale to -1 to 1 range for all variables based on input range
+  X <- scale(X, center = apply(baseformrange, MARGIN = 2, mean),
+             scale = apply(baseformrange, MARGIN = 2, function(x) x[2] - x[1])/2)
+
+  #If larger retermed formula was also provided, return that model matrix. Otherwise, return scaled baseformula model matrix as calculated above
+  if(!(is.null(altterms) | (is.null(fullformulareterm)))){
+
+    #Rename columns with alternate designations to make sure geometric combinations are handled
+    colnames(X) <- altterms[1:ncol(X)]
+
+    #Create full model matrix - need to update by substituting variables. Won't work right now
+    X <- model.matrix(fullformulareterm, data.frame(X))
+
+  }
+
+  return(X)
+
+}
