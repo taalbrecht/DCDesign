@@ -98,36 +98,38 @@ ploteffs <- function(designlist, typevec, refindex = NULL, linetype = rep("solid
     trueframe <- as.matrix(trueframe)
   }
 
+  # Initialize lists to hold y results
+  y1 = list()
+  y2 = list()
+  y3 = list()
+  y4 = list()
+  y5 = list()
+  y6 = list()
+  y7 = list()
+
   if(is.null(prevplots)){
     #Create plots if no plots from previous call supplied
     #Plot 1:
     #Plot of standard error for one estimator vs true value of that estimator for all models
     p1 <- plot_ly()
-    y1 = list()
 
     #Plot of D-Optimality vs true value of that estimator for all models
     p2 <- plot_ly()
-    y2 = list()
 
     #Plot of I-Optimality vs true value of that estimator for all models
     p3 <- plot_ly()
-    y3 = list()
 
     #Plot of size of 95% confidence region for optimal point in design space
     p4 <- plot_ly()
-    y4 = list()
 
     #Plot of A-Optimality vs true value of that estimator for all models
     p5 <- plot_ly()
-    y5 = list()
 
     #Plot of sum of probability variance across all questions vs true value of A for all models
     p6 <- plot_ly()
-    y6 = list()
 
     #Plot of confidence interval size vs true value of A for all models
     p7 <- plot_ly()
-    y7 = list()
 
     #Name plots as "...Optimality" if no reference index is used
     if(is.null(refindex)){
