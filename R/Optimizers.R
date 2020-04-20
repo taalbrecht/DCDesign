@@ -8,11 +8,13 @@
 #' @param designmat whole design matrix in raw variable terms
 #' @param base_input_range input type - 2 row matrix - matrix with variable minimums and maximums for base variables (variables common to all formulas in formulacollection). First row is minimum, second row is maximum. Names of colums should equal variable names used in formulas
 #' @param formulacollection collection of formula objects used to construct scaled model matrices. Should include the following at a minimum for linear models. Additional arguments can be included for more complex operations
+#' \describe{
 #'   \item{inputranges}{matrix - A matrix with one column per variable in inputmat and minimum and maximum values in row 1 and 2, respectively}
 #'   \item{baseformula}{formula - no-intercept formula of base algebraic combination variables}
 #'   \item{range}{matrix - matrix with one column per variable in baseformula and minimum and maximum values in row 1 and 2, respectively}
 #'   \item{termsalt}{vector, optional - names of alternate terms to replace terms in baseformula with so that the model matrix function will work. If not provided, returns scaled model matrix for baseformula}
 #'   \item{retermedformula}{formula, optional - full model formula with terms replaced by altterms elements. If not provided, returns scaled model matrix for baseformula}
+#'   }
 #' @param scalemat logical, default TRUE - whether the base variable matrix for each model should be scaled from -1 to 1 or not
 #' @param weight vector - weights to apply to each formula's objective function for overall objective function
 #'
@@ -88,29 +90,37 @@ optimizefn <- function(x, index, roworcol, designmat, base_input_range, formulac
 #' @param base_input_range 2 row matrix - Matrix with variable minimums and maximums for base variables. First row is minimum, second row is maximum. Names of colums should equal variable names used in formulas
 #' @param formulalist list of formulas - list of formulas to simultaneously optimize design for
 #' @param objectivelist list of characters - objective functions to use when optimizing each model in formulalist. Options are:
+#' \describe{
 #'   \item{D-Opt}{Maximizes X'X of centered and standardized model matrix}
 #'   \item{I-Opt}{Minimizes the integral of the prediction variance over the design space}
 #'   \item{SSE}{Minimizes sum of squared error between optimized design and values in startingmat. Uses centered and standardized model matrix for calculation.
 #'              Useful for situations where a target starting design must be kept static with reference to a specific formula in formulalist that exists in a subspace of the entire design space.}
+#'   }
 #' @param startingmat matrix with named columns - Matrix to use as a design starting point. Also used as the reference for SSE calculations when that loss function is used
 #' @param referencemat matrix with named columns - matrix used as the reference for SSE calculations when that loss function is used
 #' @param npoints integer - number of design points. Only needed if startingmat is not provided
 #' @param searchdirection character - Method used to perform optimization search. Options are:
+#' \describe{
 #'   \item{row}{Optimize by modifying one entire row at a time}
 #'   \item{column}{Optimize by modifying one entire column at a time}
 #'   \item{coordinate}{Optimize by modifying a single coordinate at a time}
+#'   }
 #' @param weight vector of numerics - weight for each formula's loss function to use to calculate overall loss from each loss function
 #' @param randomstarts TRUE/FALSE - whether a random start should be used for each row/column iteration through the optimizer
 #' @param searchstrat character - the type of search strategy to use. Options are:
+#' \describe{
 #'   \item{numoptimize}{numeric optimization. Does not require candidate points.}
 #'   \item{fedorov}{Row exchange. Requires candmat argument to be provided}
 #'   \item{cex}{Coordinate exchange. Requires cexpoints argument to be provided.}
+#'   }
 #' @param candmat matrix with column names corresponding to base variable names in base_input_range - matrix of candidate points used for fedorov optimization.
 #' @param cexpoints integer stating how many evenly spaced points should be used across the allowed variable range for the coordinate exchange search strategy
 #' @param constrainnodeslist list of data frames or matrices - list of constraining nodes for each formula if a rectangular space based on the base_input_range shouldn't be used. This is important for I-Optimality
 #' @param extraparams list of extra parameters required for non-linear model optimization. May contain
+#' \describe{
 #'   \item{altvect}{vector of integers - vector listing the choice set that each row belongs to for discrete choice optimizers}
 #'   \item{paramestimates}{vector of numerics - vector containing the prior estimates for each coefficient in the choice model. MUST BE IN THE SAME ORDER AS WOULD BE RETURNED BY THE MODEL MATRIX FUNCTION}
+#'   }
 #' @param scalemat logical, default TRUE - whether the base variable matrix for each model should be scaled from -1 to 1 or not
 #' @param verbose logical - whether to print progress statements from optimizer each time an improvement occurs
 #' @param prevoptimobject result of previous run of this function - carries fixed constants over from previous execution (formula processing, moment matrix, etc) to help speed execution. ONLY USE IF YOU ARE PASSING THE RESULT FROM A PREVIOUS RUN WITH EXACTLY THE SAME MODEL STRUCTURES AND RANGES
