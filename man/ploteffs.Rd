@@ -6,15 +6,18 @@
 \usage{
 ploteffs(designlist, typevec, refindex = NULL, linetype = rep("solid",
   length(designlist)), trueframe = NULL, prevplots = NULL,
-  returntype = "plotly")
+  returntype = "plotly", design_params = NULL,
+  loess_smooth_plots = FALSE)
 }
 \arguments{
 \item{designlist}{A list of discrete choice designs created by \code{\link{optimizemodellist}}}
 
 \item{typevec}{A vector of strings describing the discrete choice design types. Options are:
-\item{"Regular"}{A standard discrete choice design without a tournament.}
-\item{"Tournament"}{A fixed bracket choice tournament design where the same bracket assignments are used for each tournament replicate. (Includes forward-looking designs)}
-\item{"RandTournament"}{A random bracket choice tournament design where bracket assignments are randomized after each tournament completion.}}
+\describe{
+  \item{"Regular"}{A standard discrete choice design without a tournament.}
+  \item{"Tournament"}{A fixed bracket choice tournament design where the same bracket assignments are used for each tournament replicate. (Includes forward-looking designs)}
+  \item{"RandTournament"}{A random bracket choice tournament design where bracket assignments are randomized after each tournament completion.}
+  }}
 
 \item{refindex}{Integer giving reference design position in designlist if design efficiencies should be returned with respec to that particular design.}
 
@@ -25,8 +28,10 @@ ploteffs(designlist, typevec, refindex = NULL, linetype = rep("solid",
 \item{prevplots}{The return object created by a previous call to ploteffs if additional results should be added to that object.}
 
 \item{returntype}{A string specifying the type of results to return. Options are:
-\item{"plotly"}{Returns a list of plotly graph objects where each design in designlist will have a corresponding line on the plot.}
-\item{Any other argument}{Returns a list of numeric results where each design in designlist will have a corresponding entry in the list for each metric type.}}
+\describe{
+  \item{"plotly"}{Returns a list of plotly graph objects where each design in designlist will have a corresponding line on the plot.}
+  \item{Any other argument}{Returns a list of numeric results where each design in designlist will have a corresponding entry in the list for each metric type.}
+  }}
 }
 \value{
 Returns a list of plots or a list of results with the following entries
