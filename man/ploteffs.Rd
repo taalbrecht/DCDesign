@@ -4,10 +4,9 @@
 \alias{ploteffs}
 \title{Assess discrete chioce design metrics over a range of true parameter values}
 \usage{
-ploteffs(designlist, typevec, refindex = NULL, linetype = rep("solid",
-  length(designlist)), trueframe = NULL, prevplots = NULL,
-  returntype = "plotly", design_params = NULL,
-  loess_smooth_plots = FALSE)
+ploteffs(designlist, typevec, trueframe, design_params, refindex = NULL,
+  linetype = rep("solid", length(designlist)), prevplots = NULL,
+  returntype = "plotly", loess_smooth_plots = FALSE)
 }
 \arguments{
 \item{designlist}{A list of discrete choice designs created by \code{\link{optimizemodellist}}}
@@ -19,11 +18,13 @@ ploteffs(designlist, typevec, refindex = NULL, linetype = rep("solid",
   \item{"RandTournament"}{A random bracket choice tournament design where bracket assignments are randomized after each tournament completion.}
   }}
 
+\item{trueframe}{The model matrix of true parameter values to iterate across where each row is a combination of true parameter values that should have a result returned.}
+
+\item{design_params}{The vector of assumed parameter values to calculate distance from for each plot. Typically the vector of assumed parameter means or modes used to create the designs being assessed.}
+
 \item{refindex}{Integer giving reference design position in designlist if design efficiencies should be returned with respec to that particular design.}
 
 \item{linetype}{Type of line to use for each plot (only used if returntype is "plotly")}
-
-\item{trueframe}{The matrix of true parameter values to iterate across where each line is a combination of true parameter values that should have a result returned.}
 
 \item{prevplots}{The return object created by a previous call to ploteffs if additional results should be added to that object.}
 

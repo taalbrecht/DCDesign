@@ -57,9 +57,10 @@ plotlycovmat <- function(covmat, model_formula, xvar, yvar, xlims = c(-1,1), yli
 #'   \item{"Tournament"}{A fixed bracket choice tournament design where the same bracket assignments are used for each tournament replicate. (Includes forward-looking designs)}
 #'   \item{"RandTournament"}{A random bracket choice tournament design where bracket assignments are randomized after each tournament completion.}
 #'   }
+#' @param trueframe The model matrix of true parameter values to iterate across where each row is a combination of true parameter values that should have a result returned.
+#' @param design_params The vector of assumed parameter values to calculate distance from for each plot. Typically the vector of assumed parameter means or modes used to create the designs being assessed.
 #' @param refindex Integer giving reference design position in designlist if design efficiencies should be returned with respec to that particular design.
 #' @param linetype Type of line to use for each plot (only used if returntype is "plotly")
-#' @param trueframe The matrix of true parameter values to iterate across where each line is a combination of true parameter values that should have a result returned.
 #' @param prevplots The return object created by a previous call to ploteffs if additional results should be added to that object.
 #' @param returntype A string specifying the type of results to return. Options are:
 #' \describe{
@@ -81,35 +82,10 @@ plotlycovmat <- function(covmat, model_formula, xvar, yvar, xlims = c(-1,1), yli
 #' @description Plotting function for model efficiencies across a range of parameters (hard-coded) with optional overlay.
 #'
 #' @examples
-ploteffs <- function(designlist, typevec, refindex = NULL, linetype = rep("solid", length(designlist)), trueframe = NULL, prevplots = NULL, returntype = "plotly", design_params = NULL, loess_smooth_plots = FALSE){
+ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = NULL, linetype = rep("solid", length(designlist)), prevplots = NULL, returntype = "plotly", loess_smooth_plots = FALSE){
 
-  #designlist - list of designs to plot. Name will be name shown in plot
-  #typevec - vector of type of design equal in length to designlist. Should be "Tournament" or "Regular"
-  #refindex - integer representing which design should be used as a reference to calculate efficiency ratios. If not provided, will simply plot optimality of each model
-  #linetype - vector of names for type of line plotting. Per plotly: Sets the dash style of lines. Set to a dash type string ("solid", "dot", "dash", "longdash", "dashdot", or "longdashdot") or a dash length list in px (eg "5px,10px,2px,2px").
-  #design_params - if provided, will return plots vs euclidean distance from design parameters
-  #returntype - character. If "plotly", returns plot objects. Otherwise, returns list of x and each y result
-
-  #Create true prior frame if one was not provided:
-  if(is.null(trueframe)){
-    trueframe <- data.frame(icept = rep(1, times = 201),
-                            A = rep(1, times = 201),
-                            B = rep(1, times = 201),
-                            A2 = rep(-2, times = 201),
-                            B2 = rep(-1, times = 201),
-                            AB = rep(1, times = 201))
-
-    trueframe$A <- seq(from = -9, to = 11, by = 0.1)
-    trueframe <- as.matrix(trueframe)
-  }
-
-  # Define plot x axis
-  if(!is.null(design_params)){
-      # If design parameters are provided, this is euclidean distance from design_params to each point in trueframe (use rounding due to calculation imprecision)
-      x_plot_vals = round(proxy::dist(trueframe, matrix(design_params, nrow = 1))[,1], 14)
-    }else{
-      x_plot_vals = trueframe[,c("A")]
-    }
+  # Define plot x axis as the euclidean distance from design_params to each point in trueframe (use rounding due to calculation imprecision)
+  x_plot_vals = round(proxy::dist(trueframe, matrix(design_params, nrow = 1))[,1], 14)
 
   # Initialize lists to hold y results
   y1 = list()
@@ -155,26 +131,26 @@ ploteffs <- function(designlist, typevec, refindex = NULL, linetype = rep("solid
     #Name plots as "...Optimality" if no reference index is used
     if(is.null(refindex)){
 
-      p1 <- layout(p = p1, title = "SE for Beta_A Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = "Standard Error for Beta_A"))
-      p2 <- layout(p = p2, title = "Actual D-Optimality Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = "D-Optimality"))
-      p3 <- layout(p = p3, title = "Actual I-Optimality Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = "I-Optimality"))
-      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Relative Size Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = "Single Standard Error A-B Confidence Region Size"))
-      p5 <- layout(p = p5, title = "Actual A-Optimality Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = "A-Optimality"))
-      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = "Average Choice Set Var(p)"))
-      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = "Response Estimator Variance at Optimal Point"))
+      p1 <- layout(p = p1, title = "SE for Beta_A Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Standard Error for Beta_A"))
+      p2 <- layout(p = p2, title = "Actual D-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "D-Optimality"))
+      p3 <- layout(p = p3, title = "Actual I-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "I-Optimality"))
+      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Relative Size Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Single Standard Error A-B Confidence Region Size"))
+      p5 <- layout(p = p5, title = "Actual A-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "A-Optimality"))
+      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Average Choice Set Var(p)"))
+      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Response Estimator Variance at Optimal Point"))
       p8 <- layout(p = p8, title = "CDF of D-Optimality Over Sampled Parameters", xaxis = list(title = "D-Optimality"), yaxis = list(title = "Fraction of Data"))
       p9 <- layout(p = p9, title = "CDF of I-Optimality Over Sampled Parameters", xaxis = list(title = "I-Optimality"), yaxis = list(title = "Fraction of Data"))
 
     }else{
 
       #Name plots relative to reference plot if a reference is used
-      p1 <- layout(p = p1, title = "Beta_A Efficiency Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = paste("Beta_A Standard Error Efficiency of", names(designlist)[refindex])))
-      p2 <- layout(p = p2, title = "Actual D-Efficiency Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = paste("D-Efficiency of", names(designlist)[refindex])))
-      p3 <- layout(p = p3, title = "Actual I-Efficiency Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = paste("I-Efficiency of", names(designlist)[refindex])))
-      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Efficiency Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = paste("A-B Confidence Region Size Efficiency of", names(designlist)[refindex])))
-      p5 <- layout(p = p5, title = "Actual A-Efficiency Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = paste("A-Efficiency of", names(designlist)[refindex])))
-      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = paste("Ratio of Average Choice Set Var(p) to", names(designlist)[refindex])))
-      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "True Value of Coefficient A"), yaxis = list(title = paste("Ratio of Estimator Variance At Optimal Point to", names(designlist)[refindex])))
+      p1 <- layout(p = p1, title = "Beta_A Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Beta_A Standard Error Efficiency of", names(designlist)[refindex])))
+      p2 <- layout(p = p2, title = "Actual D-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("D-Efficiency of", names(designlist)[refindex])))
+      p3 <- layout(p = p3, title = "Actual I-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("I-Efficiency of", names(designlist)[refindex])))
+      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-B Confidence Region Size Efficiency of", names(designlist)[refindex])))
+      p5 <- layout(p = p5, title = "Actual A-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-Efficiency of", names(designlist)[refindex])))
+      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Average Choice Set Var(p) to", names(designlist)[refindex])))
+      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Estimator Variance At Optimal Point to", names(designlist)[refindex])))
       p8 <- layout(p = p8, title = "CDF of D-Efficiency Over Sampled Parameters", xaxis = list(title = "D-Efficiency"), yaxis = list(title = "Fraction of Data"))
       p9 <- layout(p = p9, title = "CDF of I-Efficiency Over Sampled Parameters", xaxis = list(title = "I-Efficiency"), yaxis = list(title = "Fraction of Data"))
 
@@ -455,15 +431,17 @@ ploteffs <- function(designlist, typevec, refindex = NULL, linetype = rep("solid
     ##Calculate D-Optimality of design normalized per number of questions asked and add to plot p2
     y <- (sapply(ylistloop, function(x) (1/det(x$info_mat))^(1/ncol(x$info_mat))))
     if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) (1/det(x$info_mat))^(1/ncol(x$info_mat))))}
-    if(!loess_smooth_plots){
-      p2 <- add_lines(p = p2, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
-    }else{
-      smoothed_dat = loess.smooth(x_plot_vals, y)
-      smoothed_dat = list(x = sort(unique(x_plot_vals)))
-      smoothed_dat$y = unlist(lapply(smoothed_dat$x, function(x) mean(y[x_plot_vals == x])))
 
-      p2 <- add_lines(p = p2, name = names(plotlist)[i], x = smoothed_dat$x, y = smoothed_dat$y, line = list(dash = linetype[i]))
+    # Average multiple y-values at each plot x value
+    plot_vals = list(x = sort(unique(x_plot_vals)))
+    plot_vals$y = unlist(lapply(plot_vals$x, function(x) mean(y[x_plot_vals == x])))
+
+    # Use loess smooth if specified
+    if(loess_smooth_plots){
+      plot_vals = loess.smooth(plot_vals$x, plot_vals$y)
     }
+    p2 <- add_lines(p = p2, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
+
     y2[[(length(y2) + 1)]] = y
 
     # Add D-Optimality CDF to plot 8 (use 1000 evenly spaced values along the range of results)
@@ -478,20 +456,17 @@ ploteffs <- function(designlist, typevec, refindex = NULL, linetype = rep("solid
     y <- sapply(ylistloop, function(x) sum(diag(plotlist[[i]]$FixedObjects$mommatlist[[1]]%*%solve(x$info_mat))))
     if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) sum(diag(designlist[[refindex]]$FixedObjects$mommatlist[[1]]%*%solve(x$info_mat)))))}
 
-    if(!loess_smooth_plots){
-      p3 <- add_lines(p = p3, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
-    }else{
-      # smoothed_dat = loess.smooth(x_plot_vals, y)
-      # p3 <- add_lines(p = p3, name = names(plotlist)[i], x = smoothed_dat$x, y = smoothed_dat$y, line = list(dash = linetype[i]))
-      smoothed_dat = loess.smooth(x_plot_vals, y)
-      smoothed_dat = list(x = sort(unique(x_plot_vals)))
-      smoothed_dat$y = unlist(lapply(smoothed_dat$x, function(x) mean(y[x_plot_vals == x])))
-      print(smoothed_dat$x)
-      print(dim(trueframe))
-      print(length(y))
 
-      p3 <- add_lines(p = p3, name = names(plotlist)[i], x = smoothed_dat$x, y = smoothed_dat$y, line = list(dash = linetype[i]))
+    # Average multiple y-values at each plot x value
+    plot_vals = list(x = sort(unique(x_plot_vals)))
+    plot_vals$y = unlist(lapply(plot_vals$x, function(x) mean(y[x_plot_vals == x])))
+
+    # Use loess smooth if specified
+    if(loess_smooth_plots){
+      plot_vals = loess.smooth(plot_vals$x, plot_vals$y)
     }
+    p3 <- add_lines(p = p3, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
+
     y3[[(length(y3) + 1)]] = y
 
     # Add I-Optimality CDF to plot 8 (use 1000 evenly spaced values along the range of results)
