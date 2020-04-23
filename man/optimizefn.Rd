@@ -23,11 +23,13 @@ Uses "row", "column", or "coordinate" as argument choices}
 \item{base_input_range}{input type - 2 row matrix - matrix with variable minimums and maximums for base variables (variables common to all formulas in formulacollection). First row is minimum, second row is maximum. Names of colums should equal variable names used in formulas}
 
 \item{formulacollection}{collection of formula objects used to construct scaled model matrices. Should include the following at a minimum for linear models. Additional arguments can be included for more complex operations
-\item{inputranges}{matrix - A matrix with one column per variable in inputmat and minimum and maximum values in row 1 and 2, respectively}
-\item{baseformula}{formula - no-intercept formula of base algebraic combination variables}
-\item{range}{matrix - matrix with one column per variable in baseformula and minimum and maximum values in row 1 and 2, respectively}
-\item{termsalt}{vector, optional - names of alternate terms to replace terms in baseformula with so that the model matrix function will work. If not provided, returns scaled model matrix for baseformula}
-\item{retermedformula}{formula, optional - full model formula with terms replaced by altterms elements. If not provided, returns scaled model matrix for baseformula}}
+\describe{
+  \item{inputranges}{matrix - A matrix with one column per variable in inputmat and minimum and maximum values in row 1 and 2, respectively}
+  \item{baseformula}{formula - no-intercept formula of base algebraic combination variables}
+  \item{range}{matrix - matrix with one column per variable in baseformula and minimum and maximum values in row 1 and 2, respectively}
+  \item{termsalt}{vector, optional - names of alternate terms to replace terms in baseformula with so that the model matrix function will work. If not provided, returns scaled model matrix for baseformula}
+  \item{retermedformula}{formula, optional - full model formula with terms replaced by altterms elements. If not provided, returns scaled model matrix for baseformula}
+  }}
 
 \item{scalemat}{logical, default TRUE - whether the base variable matrix for each model should be scaled from -1 to 1 or not}
 

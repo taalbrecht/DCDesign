@@ -20,10 +20,12 @@ optimizemodellist(base_input_range, formulalist,
 \item{formulalist}{list of formulas - list of formulas to simultaneously optimize design for}
 
 \item{objectivelist}{list of characters - objective functions to use when optimizing each model in formulalist. Options are:
-\item{D-Opt}{Maximizes X'X of centered and standardized model matrix}
-\item{I-Opt}{Minimizes the integral of the prediction variance over the design space}
-\item{SSE}{Minimizes sum of squared error between optimized design and values in startingmat. Uses centered and standardized model matrix for calculation.
-           Useful for situations where a target starting design must be kept static with reference to a specific formula in formulalist that exists in a subspace of the entire design space.}}
+\describe{
+  \item{D-Opt}{Maximizes X'X of centered and standardized model matrix}
+  \item{I-Opt}{Minimizes the integral of the prediction variance over the design space}
+  \item{SSE}{Minimizes sum of squared error between optimized design and values in startingmat. Uses centered and standardized model matrix for calculation.
+             Useful for situations where a target starting design must be kept static with reference to a specific formula in formulalist that exists in a subspace of the entire design space.}
+  }}
 
 \item{startingmat}{matrix with named columns - Matrix to use as a design starting point. Also used as the reference for SSE calculations when that loss function is used}
 
@@ -32,18 +34,22 @@ optimizemodellist(base_input_range, formulalist,
 \item{npoints}{integer - number of design points. Only needed if startingmat is not provided}
 
 \item{searchdirection}{character - Method used to perform optimization search. Options are:
-\item{row}{Optimize by modifying one entire row at a time}
-\item{column}{Optimize by modifying one entire column at a time}
-\item{coordinate}{Optimize by modifying a single coordinate at a time}}
+\describe{
+  \item{row}{Optimize by modifying one entire row at a time}
+  \item{column}{Optimize by modifying one entire column at a time}
+  \item{coordinate}{Optimize by modifying a single coordinate at a time}
+  }}
 
 \item{weight}{vector of numerics - weight for each formula's loss function to use to calculate overall loss from each loss function}
 
 \item{randomstarts}{TRUE/FALSE - whether a random start should be used for each row/column iteration through the optimizer}
 
 \item{searchstrat}{character - the type of search strategy to use. Options are:
-\item{numoptimize}{numeric optimization. Does not require candidate points.}
-\item{fedorov}{Row exchange. Requires candmat argument to be provided}
-\item{cex}{Coordinate exchange. Requires cexpoints argument to be provided.}}
+\describe{
+  \item{numoptimize}{numeric optimization. Does not require candidate points.}
+  \item{fedorov}{Row exchange. Requires candmat argument to be provided}
+  \item{cex}{Coordinate exchange. Requires cexpoints argument to be provided.}
+  }}
 
 \item{candmat}{matrix with column names corresponding to base variable names in base_input_range - matrix of candidate points used for fedorov optimization.}
 
@@ -52,8 +58,10 @@ optimizemodellist(base_input_range, formulalist,
 \item{constrainnodeslist}{list of data frames or matrices - list of constraining nodes for each formula if a rectangular space based on the base_input_range shouldn't be used. This is important for I-Optimality}
 
 \item{extraparams}{list of extra parameters required for non-linear model optimization. May contain
-\item{altvect}{vector of integers - vector listing the choice set that each row belongs to for discrete choice optimizers}
-\item{paramestimates}{vector of numerics - vector containing the prior estimates for each coefficient in the choice model. MUST BE IN THE SAME ORDER AS WOULD BE RETURNED BY THE MODEL MATRIX FUNCTION}}
+\describe{
+  \item{altvect}{vector of integers - vector listing the choice set that each row belongs to for discrete choice optimizers}
+  \item{paramestimates}{vector of numerics - vector containing the prior estimates for each coefficient in the choice model. MUST BE IN THE SAME ORDER AS WOULD BE RETURNED BY THE MODEL MATRIX FUNCTION}
+  }}
 
 \item{scalemat}{logical, default TRUE - whether the base variable matrix for each model should be scaled from -1 to 1 or not}
 
