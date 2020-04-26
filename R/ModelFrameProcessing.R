@@ -85,7 +85,6 @@ standardize_cols <- function(StartingMat, column_names, Input_range, reverse_sta
   #Return Standardized Matrix
   return(StandardMat)}
 
-##################################################################################################################
 
 ###############################Pull input variables from formula function#######################################
 
@@ -111,8 +110,6 @@ list_input_variables <- function(input_formula){
   return(InputVarList)
 }
 
-#########################################################################################################################
-
 
 #' Find minimum and maximum for functions of base variables
 #'
@@ -127,13 +124,6 @@ list_input_variables <- function(input_formula){
 #'
 #' @examples
 algebraic_range <- function(base_var_range, algebraic_formula){
-  #Calculates: Max and min for algebraic combination of base variables when range of base variables is known
-  #INPUTS
-  ##base_var_range - matrix or data frame listing the range of base input variables used for algebraic model. Names must match those used in algebraic_formula
-  ##			format is matrix or data frame with column name for each base input variable then minimum value in first row and maximum value in second row.
-  ##algebraic_formula - a formula (one or two sided) that contains all of the algebraic combos to be evaluated. format = x~ A + B + A:B + I(A^2/B)+ I(ln(A)), etc
-
-  #OUTPUT: matrix(AlgebraicRange), with column names matching model matrix terms on input side of formula. Row 1 = min and row 2 = max.
 
   #Pull names of each algebraic term and factor combination on input side of formula
   algebraic_input_terms <- colnames(model.matrix(algebraic_formula, base_var_range), "factors")[-1]
@@ -191,8 +181,6 @@ algebraic_range <- function(base_var_range, algebraic_formula){
   #Return Min and Max for Algebraic Functions
   return(AlgebraicRange)}
 
-#################################################################################################################################
-
 
 #' Fast flexible filling design
 #'
@@ -214,63 +202,12 @@ algebraic_range <- function(base_var_range, algebraic_formula){
 #'
 #' @examples
 fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scaleinputs = TRUE, clustermethod = "kmeans", centermethod = "centroid"){
-  #Function for fast flexible filling designs that uses clustering to identify design points that should be evenly spread across design space
-  #INPUTS:
-  ##inputranges - matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)
-  ##constrainnodes - matrix with nodes of constraining manifold (hull) within rectangular inputranges space. Should be a matrix of nodes as produced by the convhulln geometry package. It is ok to provide more points than necessary to construct the bounding manifold; they will simply be removed during the manifold construction process. Only works for convex manifolds for now
-  ##k - integer - number of points to create for design
-  ##nrand - integer, default = NULL - number of random points to generate per design point. If not supplied, 100 random points per design point will be used. If k0means algorithm doesn't converge, try adding more random starts
-  ##scaleinputs - logical, default = TRUE - whether the input ranges
-  ##clustermethod - character, default = "kmeans" - method used to identify clusters, can be ward (ward clustering) or kmeans (kmeans clustering)
-  ##centermethod - character, default = "centroid" - method used to identify design point from each cluster. Options are:
-  ########centroid - creates a point from each cluster at the centroid
-  ########MaxPro - selects the points by choosing the point from each cluster that optimizes the maximum projection criteria
-  #OUTPUT:
-  ##DesignMatrix - matrix with column names corresponding to variable names in inputranges
 
   #Generate random data either subject to rectangular constraints or a convex hull constraint
-
   #Check against constraining convex manifold if provided
   if(!is.null(constrainnodes)){
 
     randmat <- convexuniformfill(n = nrand*k, inputranges = inputranges, constrainnodes = constrainnodes)$UniformFill
-
-    #CODE BELOW HAS BEEN REPLACED BY FUNCTION CALL ABOVE
-    # #Initialize candidate point frame
-    # randmat <- matrix(ncol = ncol(inputranges), nrow = 0)
-    #
-    # #Set placeholder count for
-    # goodnodes <- c()
-    #
-    # #Set starting scale factor (percent chance a candidate point will be in the hull)
-    # scalefactor <- 1.1*prod(apply(inputranges, MARGIN = 2, function(x) max(x) - min(x)))/convhulln(constrainnodes, options = "FA")$vol
-    #
-    # #Keep generating new data until enough points have been generated in the convex manifold
-    # while(nrow(randmat) < nrand*k){
-    #
-    #   #Randomly generate data
-    #   randmat <- rbind(randmat, apply(inputranges, MARGIN = 2, function(x) runif((nrand*k-nrow(randmat))*scalefactor, min = min(x), max = max(x))))
-    #
-    #   ##NOTE inhull function has horrible memory handling so need to loop through in 50000 point chunks. Will likely have to cap at a certain number of points and run through loop with garbage handling
-    #   #Determine which randomly generated points are in or on the surface of the convex manifold
-    #   outvec <- inhull(testpts = randmat, calpts = constrainnodes)
-    #
-    #
-    #   #Convert to logical indicating TRUE if the point is in or on the surface of the convex manifold
-    #   goodnodes <- outvec != -1
-    #
-    #   #Only keep points in manifold
-    #   randmat <- randmat[goodnodes,]
-    #   gc()
-    #
-    #   #Update scale factor (ratio of candidate points to points actually in manifold * safety factor)
-    #   scalefactor <- 1.2*length(goodnodes)/sum(goodnodes)
-    #
-    # }
-    #
-    # #Remove extra valid points
-    # randmat <- randmat[1:(nrand*k),]
-
 
   }else{
 
@@ -440,8 +377,6 @@ inhull <- function(testpts, calpts, hull=geometry::convhulln(calpts), tol=mean(m
   # -1 = outside hull
   # 0 = on hull (to precision indicated by tol)
   #--------------------------------------------------------
-  # require(geometry, quietly=TRUE) # for convhulln
-  # require(MASS, quietly=TRUE) # for Null
 
   # ensure arguments are matrices (not data frames) and get sizes
   calpts <- as.matrix(calpts)
@@ -477,11 +412,6 @@ inhull <- function(testpts, calpts, hull=geometry::convhulln(calpts), tol=mean(m
   # 0 then x is on hull
   # -ve then x is outside hull
   # Instead of dot((x - a),nrml) use dot(x,nrml) - dot(a, nrml)
-  #CHECK AGAINST LINES BELOW, THEN COMMENT OUT
-  #aN <- diag(a %*% t(nrmls))
-  #val <- apply(testpts %*% t(nrmls) - matrix(aN, cx, nt, byrow=TRUE), 1,min)
-  #Instead of creating gigantic matrix diag(a%*%t(nrmls)) then extracting diagonals as above, be smart instead and only calculate the diagonals using rowSums(a*nrmls)
-  #MASSIVE IMPROVEMENT IN MEMORY HANDLING AND SPEED OVER METHOD USED ABOVE TO CALCULATE val and aN (useless quantities not calculated anymore, calculate one row at a time instead of whole matrix, both of which would cause out of memory issues)
   aN <- rowSums(a*nrmls)
   val <- apply(testpts, MARGIN = 1, FUN = function(x) min(x%*%t(nrmls) - aN))
   # code values inside 'tol' to zero, return sign as integer
@@ -506,12 +436,6 @@ inhull <- function(testpts, calpts, hull=geometry::convhulln(calpts), tol=mean(m
 #'
 #' @examples
 convexuniformfill <- function(n, inputranges, constrainnodes){
-  #INPUTS:
-  ##n - integer - number of random points to generate
-  ##inputranges - matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)
-  ##constrainnodes - matrix with nodes of constraining manifold (hull) within rectangular inputranges space. Should be a matrix of nodes as produced by the convhulln geometry package. It is ok to provide more points than necessary to construct the bounding manifold; they will simply be removed during the manifold construction process. Only works for convex manifolds for now
-  #OUTPUTS:
-  #UniformFill - matrix containing uniformly randomly distributed points in the supplied manifold. Column names are transferred from inputranges
 
   #Initialize candidate point frame
   randmat <- matrix(ncol = ncol(inputranges), nrow = 0)
@@ -667,16 +591,8 @@ candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
 #'
 #' @examples
 designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 1000*ncol(attributes(terms(modelformula))$factors)){
-  #INPUTS:
-  ##inputranges - matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)
-  ##modelformula - formula of model to use for calculating moment matrix. Terms must match column names of inputranges otherwise model matrix cannot be calculated appropriately
-  ##constrainnodes - matrix with nodes of constraining manifold (hull) within rectangular inputranges space. Should be a matrix of nodes as produced by the convhulln geometry package. It is ok to provide more points than necessary to construct the bounding manifold; they will simply be removed during the manifold construction process. Only works for convex manifolds for now
-  ##n - integer, default = 1000 points per factor in modelformula - number of points to use to numerically approximate moment matrix integral. Also suggest at least 1000 points per factor in model formula
-  #OUTPUT:
-  ##MomentMatrix - numeric approximation of moment matrix based on uniform distribution of random points specified by inputs
 
   #Generate random data either subject to rectangular constraints or a convex hull constraint
-
   #Check against constraining convex manifold if provided
   if(!is.na(constrainnodes)){
 
@@ -717,13 +633,6 @@ designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 100
 #'
 #' @examples
 Xmat <- function(inputmat, inputranges, baseformula, baseformrange, altterms = NULL, fullformulareterm = NULL){
-  #INPUTS:
-  ##inputmat - matrix - design to evaluate in terms of variables in inputranges
-  ##inputranges - matrix - matrix with one column per variable in inputmat and minimum and maximum values in row 1 and 2, respectively
-  ##baseformula - formula - no-intercept formula of base algebraic combination variables
-  ##baseformrange - matrix - matrix with one column per variable in baseformula and minimum and maximum values in row 1 and 2, respectively
-  ##altterms - vector, optional - names of alternate terms to replace terms in baseformula with so that the model matrix function will work. If not provided, returns scaled model matrix for baseformula
-  ##fullformulareterm - formula, optional - full model formula with terms replaced by altterms elements. If not provided, returns scaled model matrix for baseformula
 
   #Create model matrix: X
   #Translate to second formula space

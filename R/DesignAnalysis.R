@@ -565,35 +565,9 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
 #' @examples
 choicesim <- function(testbase, trueform, trueparams, altvect, numsims,
                       fullrandomize = FALSE, tournament = FALSE, randtournament = FALSE){
-  #INPUTS:
-  ##testbase - data frame - design matrix to use for simulation
-  ##trueform - formula - formula used to construct model matrix for simulation
-  ##trueparams - vector - vector of true coefficient values corresponding to the exact order of terms returned by a model.matrix call using trueform
-  ##altvect - vector - vector of integers that assign each row in testbase to a question set
-  ##numsims - integer - number of repeats to use for simulation
-  ##fullrandomize - logical - whether the order of alternatives in testbase should be fully randomized before each simulation run
-  ##tournament - logical - whether a single elimination winners' tournament should be used on the results of each simulation.
-  ##randtournament - logical - whether the tournament bracket used for the tournament should be randomized (even if the design is not randomized per fullrandomize)
-  #OUTPUT: named list with following attributes:
-  ##simframe - data frame containing coefficient estimates resulting from running a model against each simulation in numsims
-  ##optframe - data frame containing estimated optimal parameter value combination to maximize trueform based on estimated coefficients in simframe
 
-  #Redefined below as inputs
-  # testbase <- cexdesign[[length(cexdesign)]]$DesignMatrix
-  # trueform <- cexdesign[[1]]$FixedObjects$formulalist[[1]]
-  # #trueparams <- c(0.5, 0.5, 0.5, -1, -1)
-  # trueparams <- c(-0.5, -2, 2, -3, -3)
-  # altvect <- cexdesign[[1]]$FixedObjects$extraparams[[1]]$altvect
-  # #Whether design should be fully randomized (random pairing of profiles)
-  # fullrandomize <- FALSE
-  # #Whether a winners tournament should be used
-  # tournament <- FALSE
-  # #Whether tournament brackets should be randomized
-  # randtournament <- FALSE
+  #Automated prep work (run every time loop below is run)
 
-
-
-  ##Automated prep work (run every time loop below is run)
   #Generate model matrix
   testdesign <- testbase
   modmat <- model.matrix(trueform, data = testdesign)
@@ -622,15 +596,7 @@ choicesim <- function(testbase, trueform, trueparams, altvect, numsims,
   testdesign$Chosen <- NA
   testdesign$UniqueID <- c(1:nrow(testdesign))
 
-  #Perhaps already structured correctly?
-  # logitframe <- mlogit.data(testdesign,
-  #                           shape = "long",
-  #                           varying = which(!(colnames(testdesign) %in% c("Chosen", "Alternative"))),
-  #                           alt.var = "Alternative",
-  #                           choice = "Chosen",
-  #                           id.var = "UniqueID")
-
-  ##Simulation loop for any given design (number of full runs through design)
+  #Simulation loop for any given design (number of full runs through design)
   simframe <- matrix(data = NA, nrow = numsims, ncol = 2*length(trueparams))
   #optframe <- matrix(data = NA, nrow = 1000, ncol = ncol(testbase))
   optframe <- data.frame(matrix(data = NA, nrow = numsims, ncol = ncol(testbase)))
