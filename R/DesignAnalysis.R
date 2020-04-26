@@ -64,6 +64,7 @@ plotlycovmat <- function(covmat, model_formula, xvar, yvar, xlims = c(-1,1), yli
 #'   \item{"plotly"}{Returns a list of plotly graph objects where each design in designlist will have a corresponding line on the plot.}
 #'   \item{Any other argument}{Returns a list of numeric results where each design in designlist will have a corresponding entry in the list for each metric type.}
 #'   }
+#' @param loess_smooth_plots If TRUE, applies loess smoothing to efficiency results
 #'
 #' @return Returns a list of plots or a list of results with the following entries
 #'   \item{x}{The x-values used for the plot}
