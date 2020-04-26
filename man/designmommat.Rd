@@ -5,7 +5,7 @@
 \title{Calculate moment matrix of design space}
 \usage{
 designmommat(inputranges, modelformula, constrainnodes = NA, n = 1000 *
-  ncol(attributes(terms(modelformula))$factors))
+  ncol(attributes(stats::terms(modelformula))$factors))
 }
 \arguments{
 \item{inputranges}{matrix - A matrix with named columns where first row is minimum and second row is maximum - range of base input variables that will be used as ranges to generate random points for design space filling (including geometric combination variables)}

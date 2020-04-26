@@ -1,7 +1,11 @@
 Package: DCDesign
 Type: Package
 Title: Experimental design for discrete choice designs
-Version: 0.1.0
+Version: 0.1.1
+Date: 2020-04-26
+Depends: R (>= 3.4.0)
+Imports: MASS, geometry, nlme, proxy
+Suggests: plotly
 Author: Thomas A. Albrecht
 Maintainer: Thomas A. Albrecht <albr0149@umn.edu>
 Description: Create experimental designs for discrete choice designs, including fixed prior, bayesian prior, and tournament designs.
