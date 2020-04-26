@@ -130,28 +130,28 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     #Name plots as "...Optimality" if no reference index is used
     if(is.null(refindex)){
 
-      p1 <- layout(p = p1, title = "SE for Beta_A Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Standard Error for Beta_A"))
-      p2 <- layout(p = p2, title = "Actual D-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "D-Optimality"))
-      p3 <- layout(p = p3, title = "Actual I-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "I-Optimality"))
-      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Relative Size Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Single Standard Error A-B Confidence Region Size"))
-      p5 <- layout(p = p5, title = "Actual A-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "A-Optimality"))
-      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Average Choice Set Var(p)"))
-      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Response Estimator Variance at Optimal Point"))
-      p8 <- layout(p = p8, title = "CDF of D-Optimality Over Sampled Parameters", xaxis = list(title = "D-Optimality"), yaxis = list(title = "Fraction of Data"))
-      p9 <- layout(p = p9, title = "CDF of I-Optimality Over Sampled Parameters", xaxis = list(title = "I-Optimality"), yaxis = list(title = "Fraction of Data"))
+      p1 <- plotly::layout(p = p1, title = "SE for Beta_A Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Standard Error for Beta_A"))
+      p2 <- plotly::layout(p = p2, title = "Actual D-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "D-Optimality"))
+      p3 <- plotly::layout(p = p3, title = "Actual I-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "I-Optimality"))
+      p4 <- plotly::layout(p = p4, title = "Optimal Point Confidence Region Relative Size Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Single Standard Error A-B Confidence Region Size"))
+      p5 <- plotly::layout(p = p5, title = "Actual A-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "A-Optimality"))
+      p6 <- plotly::layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Average Choice Set Var(p)"))
+      p7 <- plotly::layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Response Estimator Variance at Optimal Point"))
+      p8 <- plotly::layout(p = p8, title = "CDF of D-Optimality Over Sampled Parameters", xaxis = list(title = "D-Optimality"), yaxis = list(title = "Fraction of Data"))
+      p9 <- plotly::layout(p = p9, title = "CDF of I-Optimality Over Sampled Parameters", xaxis = list(title = "I-Optimality"), yaxis = list(title = "Fraction of Data"))
 
     }else{
 
       #Name plots relative to reference plot if a reference is used
-      p1 <- layout(p = p1, title = "Beta_A Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Beta_A Standard Error Efficiency of", names(designlist)[refindex])))
-      p2 <- layout(p = p2, title = "Actual D-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("D-Efficiency of", names(designlist)[refindex])))
-      p3 <- layout(p = p3, title = "Actual I-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("I-Efficiency of", names(designlist)[refindex])))
-      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-B Confidence Region Size Efficiency of", names(designlist)[refindex])))
-      p5 <- layout(p = p5, title = "Actual A-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-Efficiency of", names(designlist)[refindex])))
-      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Average Choice Set Var(p) to", names(designlist)[refindex])))
-      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Estimator Variance At Optimal Point to", names(designlist)[refindex])))
-      p8 <- layout(p = p8, title = "CDF of D-Efficiency Over Sampled Parameters", xaxis = list(title = "D-Efficiency"), yaxis = list(title = "Fraction of Data"))
-      p9 <- layout(p = p9, title = "CDF of I-Efficiency Over Sampled Parameters", xaxis = list(title = "I-Efficiency"), yaxis = list(title = "Fraction of Data"))
+      p1 <- plotly::layout(p = p1, title = "Beta_A Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Beta_A Standard Error Efficiency of", names(designlist)[refindex])))
+      p2 <- plotly::layout(p = p2, title = "Actual D-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("D-Efficiency of", names(designlist)[refindex])))
+      p3 <- plotly::layout(p = p3, title = "Actual I-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("I-Efficiency of", names(designlist)[refindex])))
+      p4 <- plotly::layout(p = p4, title = "Optimal Point Confidence Region Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-B Confidence Region Size Efficiency of", names(designlist)[refindex])))
+      p5 <- plotly::layout(p = p5, title = "Actual A-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-Efficiency of", names(designlist)[refindex])))
+      p6 <- plotly::layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Average Choice Set Var(p) to", names(designlist)[refindex])))
+      p7 <- plotly::layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Estimator Variance At Optimal Point to", names(designlist)[refindex])))
+      p8 <- plotly::layout(p = p8, title = "CDF of D-Efficiency Over Sampled Parameters", xaxis = list(title = "D-Efficiency"), yaxis = list(title = "Fraction of Data"))
+      p9 <- plotly::layout(p = p9, title = "CDF of I-Efficiency Over Sampled Parameters", xaxis = list(title = "I-Efficiency"), yaxis = list(title = "Fraction of Data"))
 
     }
 
