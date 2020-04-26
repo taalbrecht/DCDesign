@@ -394,7 +394,7 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
 #'   Based on Matlab code by John D'Errico 04 Mar 2006 (Updated 30 Oct 2006) \url{http://www.mathworks.com/matlabcentral/fileexchange/10226-inhull} with some modifications for greatly improved speed.
 #'
 #' @examples
-inhull <- function(testpts, calpts, hull=convhulln(calpts), tol=mean(mean(abs(as.matrix(calpts))))*sqrt(.Machine$double.eps)) {
+inhull <- function(testpts, calpts, hull=geometry::convhulln(calpts), tol=mean(mean(abs(as.matrix(calpts))))*sqrt(.Machine$double.eps)) {
   #++++++++++++++++++++
   # R implementation of the Matlab code by John D'Errico 04 Mar 2006 (Updated 30 Oct 2006)
   # downloaded from
@@ -440,8 +440,8 @@ inhull <- function(testpts, calpts, hull=convhulln(calpts), tol=mean(mean(abs(as
   # -1 = outside hull
   # 0 = on hull (to precision indicated by tol)
   #--------------------------------------------------------
-  require(geometry, quietly=TRUE) # for convhulln
-  require(MASS, quietly=TRUE) # for Null
+  # require(geometry, quietly=TRUE) # for convhulln
+  # require(MASS, quietly=TRUE) # for Null
 
   # ensure arguments are matrices (not data frames) and get sizes
   calpts <- as.matrix(calpts)
@@ -454,7 +454,7 @@ inhull <- function(testpts, calpts, hull=convhulln(calpts), tol=mean(mean(abs(as
 
   degenflag <- matrix(TRUE, nt, 1)
   for (i in 1:nt) {
-    nullsp <- t(Null(t(calpts[hull[i,-1],] - matrix(calpts[hull[i,1],],p-1,p, byrow=TRUE))))
+    nullsp <- t(MASS::Null(t(calpts[hull[i,-1],] - matrix(calpts[hull[i,1],],p-1,p, byrow=TRUE))))
 
     if (dim(nullsp)[1] == 1) { nrmls[i,] <- nullsp
 
@@ -520,7 +520,7 @@ convexuniformfill <- function(n, inputranges, constrainnodes){
   goodnodes <- c()
 
   #Set starting scale factor (percent chance a candidate point will be in the hull)
-  scalefactor <- 1.1*prod(apply(inputranges, MARGIN = 2, function(x) max(x) - min(x)))/convhulln(constrainnodes, options = "FA")$vol
+  scalefactor <- 1.1*prod(apply(inputranges, MARGIN = 2, function(x) max(x) - min(x)))/geometry::convhulln(constrainnodes, options = "FA")$vol
 
   #Keep generating new data until enough points have been generated in the convex manifold
   while(nrow(randmat) < n){
