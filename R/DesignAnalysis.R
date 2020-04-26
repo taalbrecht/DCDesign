@@ -24,21 +24,19 @@ plotlycovmat <- function(covmat, model_formula, xvar, yvar, xlims = c(-1,1), yli
   colnames(plotmat)[1] <- xvar
   colnames(plotmat)[2] <- yvar
 
-  plotmatmodmat <- model.matrix(model_formula, data.frame(plotmat))
+  plotmatmodmat <- stats::model.matrix(model_formula, data.frame(plotmat))
   varest <- apply(plotmatmodmat,MARGIN = 1, function(x) t(x)%*%covmat%*%(x))
 
   zmat <- matrix(varest, nrow = (steps+1), byrow = TRUE)
 
-  #Create new plot if one not supplied
+  #Create new blank plotly object if one not supplied
   if(is.null(prevplot)){
-    prevplot <- plotly::plot_ly(z = zmat, x = seq(from = min(xlims), to = max(xlims), by = (max(xlims) - min(xlims))/steps),
-                        y = seq(from = min(ylims), to = max(ylims), by = (max(ylims) - min(ylims))/steps)) %>% plotly::add_surface()
-
-  }else{
-    #Otherwise, add surface to existing plot
-    prevplot <- plotly::add_surface(prevplot, z = zmat, x = seq(from = min(xlims), to = max(xlims), by = (max(xlims) - min(xlims))/steps),
-                            y = seq(from = min(ylims), to = max(ylims), by = (max(ylims) - min(ylims))/steps))
+    prevplot <- plotly::plot_ly()
   }
+
+  # Add surface to plotly object
+  prevplot <- plotly::add_surface(prevplot, z = zmat, x = seq(from = min(xlims), to = max(xlims), by = (max(xlims) - min(xlims))/steps),
+                                  y = seq(from = min(ylims), to = max(ylims), by = (max(ylims) - min(ylims))/steps))
 
   return(prevplot)
 
@@ -182,7 +180,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     #get list of info matrices for fixed bracket tournament designs at all possible values of true params and gradient matrix at optimal point that maximizes true function
     if(typevec[refindex] == "Tournament"){
       ylistbasic <- apply(trueframe, MARGIN = 1, function(x){
-        output <- getchoicemodinfoprobs(modmat = model.matrix(designlist[[refindex]]$FixedObjects$formulalist[[1]], data.frame(designlist[[refindex]]$DesignMatrix)),
+        output <- getchoicemodinfoprobs(modmat = stats::model.matrix(designlist[[refindex]]$FixedObjects$formulalist[[1]], data.frame(designlist[[refindex]]$DesignMatrix)),
                                         paramestimates = as.vector(x),
                                         matchupframe = designlist[[refindex]]$FixedObjects$extraparams[[1]]$matchupframe)
 
@@ -228,7 +226,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
           neword <- sample(unique(designlist[[refindex]]$FixedObjects$extraparams[[1]]$altvect)*2)
           neword <- c(rbind(neword-1, neword))
 
-          output <- getchoicemodinfoprobs(modmat = model.matrix(designlist[[refindex]]$FixedObjects$formulalist[[1]],
+          output <- getchoicemodinfoprobs(modmat = stats::model.matrix(designlist[[refindex]]$FixedObjects$formulalist[[1]],
                                                                 data.frame(designlist[[refindex]]$DesignMatrix[neword,])),
                                           paramestimates = as.vector(x),
                                           matchupframe = designlist[[refindex]]$FixedObjects$extraparams[[1]]$matchupframe)
@@ -274,7 +272,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     #get list of info matrices for non-tournament designs at all possible values of true params and gradient matrix at optimal point that maximizes true function
     if(typevec[refindex] == "Regular"){
       ylistbasic <- apply(trueframe, MARGIN = 1, function(x){
-        output <- d_effchoice(CurrentMatrix = model.matrix(designlist[[refindex]]$FixedObjects$formulalist[[1]], data.frame(designlist[[refindex]]$DesignMatrix)),
+        output <- d_effchoice(CurrentMatrix = stats::model.matrix(designlist[[refindex]]$FixedObjects$formulalist[[1]], data.frame(designlist[[refindex]]$DesignMatrix)),
                               altvect = designlist[[refindex]]$FixedObjects$extraparams[[1]]$altvect,
                               paramestimates = as.vector(x), returninfomat = TRUE)
 
@@ -302,7 +300,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     #get list of info matrices for fixed tournament designs at all possible values of true params and gradient matrix at optimal point that maximizes true function
     if(plottype[i] == "Tournament"){
       ylistloop <- apply(trueframe, MARGIN = 1, function(x){
-        output <- getchoicemodinfoprobs(modmat = model.matrix(plotlist[[i]]$FixedObjects$formulalist[[1]], data.frame(plotlist[[i]]$DesignMatrix)),
+        output <- getchoicemodinfoprobs(modmat = stats::model.matrix(plotlist[[i]]$FixedObjects$formulalist[[1]], data.frame(plotlist[[i]]$DesignMatrix)),
                                         paramestimates = as.vector(x),
                                         matchupframe = plotlist[[i]]$FixedObjects$extraparams[[1]]$matchupframe)
 
@@ -348,7 +346,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
           neword <- sample(unique(plotlist[[i]]$FixedObjects$extraparams[[1]]$altvect)*2)
           neword <- c(rbind(neword-1, neword))
 
-          output <- getchoicemodinfoprobs(modmat = model.matrix(plotlist[[i]]$FixedObjects$formulalist[[1]],
+          output <- getchoicemodinfoprobs(modmat = stats::model.matrix(plotlist[[i]]$FixedObjects$formulalist[[1]],
                                                                 data.frame(plotlist[[i]]$DesignMatrix[neword,])),
                                           paramestimates = as.vector(x),
                                           matchupframe = plotlist[[i]]$FixedObjects$extraparams[[1]]$matchupframe)
@@ -394,7 +392,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     #get list of info matrices for non-tournament designs using the average of 10 random bracket arrangements at all possible values of true params and gradient matrix at optimal point that maximizes true function
     if(plottype[i] == "Regular"){
       ylistloop <- apply(trueframe, MARGIN = 1, function(x){
-        output <- d_effchoice(CurrentMatrix = model.matrix(plotlist[[i]]$FixedObjects$formulalist[[1]], data.frame(plotlist[[i]]$DesignMatrix)),
+        output <- d_effchoice(CurrentMatrix = stats::model.matrix(plotlist[[i]]$FixedObjects$formulalist[[1]], data.frame(plotlist[[i]]$DesignMatrix)),
                               altvect = plotlist[[i]]$FixedObjects$extraparams[[1]]$altvect,
                               paramestimates = as.vector(x), returninfomat = TRUE)
 
@@ -436,14 +434,14 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
 
     # Use loess smooth if specified
     if(loess_smooth_plots){
-      plot_vals = loess.smooth(plot_vals$x, plot_vals$y)
+      plot_vals = stats::loess.smooth(plot_vals$x, plot_vals$y)
     }
     p2 <- plotly::add_lines(p = p2, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
 
     y2[[(length(y2) + 1)]] = y
 
     # Add D-Optimality CDF to plot 8 (use 1000 evenly spaced values along the range of results)
-    ecdf_fun = ecdf(y)
+    ecdf_fun = stats::ecdf(y)
     ecdf_x = seq(from = min(y), to = max(y), length.out = 1000)
     y = ecdf_fun(ecdf_x)
     p8 <- plotly::add_lines(p = p8, name = names(plotlist)[i], x = ecdf_x, y = y, line = list(dash = linetype[i]))
@@ -461,14 +459,14 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
 
     # Use loess smooth if specified
     if(loess_smooth_plots){
-      plot_vals = loess.smooth(plot_vals$x, plot_vals$y)
+      plot_vals = stats::loess.smooth(plot_vals$x, plot_vals$y)
     }
     p3 <- plotly::add_lines(p = p3, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
 
     y3[[(length(y3) + 1)]] = y
 
     # Add I-Optimality CDF to plot 8 (use 1000 evenly spaced values along the range of results)
-    ecdf_fun = ecdf(y)
+    ecdf_fun = stats::ecdf(y)
     ecdf_x = seq(from = min(y), to = max(y), length.out = 1000)
     y = ecdf_fun(ecdf_x)
     p9 <- plotly::add_lines(p = p9, name = names(plotlist)[i], x = ecdf_x, y = y, line = list(dash = linetype[i]))
