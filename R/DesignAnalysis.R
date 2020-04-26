@@ -1,4 +1,3 @@
-library(plotly)
 library(mlogit)
 
 #' Create a surface plot of prediction variance against two variables
@@ -34,12 +33,12 @@ plotlycovmat <- function(covmat, model_formula, xvar, yvar, xlims = c(-1,1), yli
 
   #Create new plot if one not supplied
   if(is.null(prevplot)){
-    prevplot <- plot_ly(z = zmat, x = seq(from = min(xlims), to = max(xlims), by = (max(xlims) - min(xlims))/steps),
-                        y = seq(from = min(ylims), to = max(ylims), by = (max(ylims) - min(ylims))/steps)) %>% add_surface()
+    prevplot <- plotly::plot_ly(z = zmat, x = seq(from = min(xlims), to = max(xlims), by = (max(xlims) - min(xlims))/steps),
+                        y = seq(from = min(ylims), to = max(ylims), by = (max(ylims) - min(ylims))/steps)) %>% plotly::add_surface()
 
   }else{
     #Otherwise, add surface to existing plot
-    prevplot <- add_surface(prevplot, z = zmat, x = seq(from = min(xlims), to = max(xlims), by = (max(xlims) - min(xlims))/steps),
+    prevplot <- plotly::add_surface(prevplot, z = zmat, x = seq(from = min(xlims), to = max(xlims), by = (max(xlims) - min(xlims))/steps),
                             y = seq(from = min(ylims), to = max(ylims), by = (max(ylims) - min(ylims))/steps))
   }
 
@@ -102,57 +101,57 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     #Create plots if no plots from previous call supplied
     #Plot 1:
     #Plot of standard error for one estimator vs true value of that estimator for all models
-    p1 <- plot_ly()
+    p1 <- plotly::plot_ly()
 
     #Plot of D-Optimality vs true value of that estimator for all models
-    p2 <- plot_ly()
+    p2 <- plotly::plot_ly()
 
     #Plot of I-Optimality vs true value of that estimator for all models
-    p3 <- plot_ly()
+    p3 <- plotly::plot_ly()
 
     #Plot of size of 95% confidence region for optimal point in design space
-    p4 <- plot_ly()
+    p4 <- plotly::plot_ly()
 
     #Plot of A-Optimality vs true value of that estimator for all models
-    p5 <- plot_ly()
+    p5 <- plotly::plot_ly()
 
     #Plot of sum of probability variance across all questions vs true value of A for all models
-    p6 <- plot_ly()
+    p6 <- plotly::plot_ly()
 
     #Plot of confidence interval size vs true value of A for all models
-    p7 <- plot_ly()
+    p7 <- plotly::plot_ly()
 
     #Plot of CDF of D-Optimality across all values in trueframe
-    p8 <- plot_ly()
+    p8 <- plotly::plot_ly()
 
     #Plot of CDF of I-Optimality across all values in trueframe
-    p9 <- plot_ly()
+    p9 <- plotly::plot_ly()
 
     #Name plots as "...Optimality" if no reference index is used
     if(is.null(refindex)){
 
-      p1 <- layout(p = p1, title = "SE for Beta_A Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Standard Error for Beta_A"))
-      p2 <- layout(p = p2, title = "Actual D-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "D-Optimality"))
-      p3 <- layout(p = p3, title = "Actual I-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "I-Optimality"))
-      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Relative Size Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Single Standard Error A-B Confidence Region Size"))
-      p5 <- layout(p = p5, title = "Actual A-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "A-Optimality"))
-      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Average Choice Set Var(p)"))
-      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Response Estimator Variance at Optimal Point"))
-      p8 <- layout(p = p8, title = "CDF of D-Optimality Over Sampled Parameters", xaxis = list(title = "D-Optimality"), yaxis = list(title = "Fraction of Data"))
-      p9 <- layout(p = p9, title = "CDF of I-Optimality Over Sampled Parameters", xaxis = list(title = "I-Optimality"), yaxis = list(title = "Fraction of Data"))
+      p1 <- plotly::layout(p = p1, title = "SE for Beta_A Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Standard Error for Beta_A"))
+      p2 <- plotly::layout(p = p2, title = "Actual D-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "D-Optimality"))
+      p3 <- plotly::layout(p = p3, title = "Actual I-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "I-Optimality"))
+      p4 <- plotly::layout(p = p4, title = "Optimal Point Confidence Region Relative Size Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Single Standard Error A-B Confidence Region Size"))
+      p5 <- plotly::layout(p = p5, title = "Actual A-Optimality Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "A-Optimality"))
+      p6 <- plotly::layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Average Choice Set Var(p)"))
+      p7 <- plotly::layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = "Response Estimator Variance at Optimal Point"))
+      p8 <- plotly::layout(p = p8, title = "CDF of D-Optimality Over Sampled Parameters", xaxis = list(title = "D-Optimality"), yaxis = list(title = "Fraction of Data"))
+      p9 <- plotly::layout(p = p9, title = "CDF of I-Optimality Over Sampled Parameters", xaxis = list(title = "I-Optimality"), yaxis = list(title = "Fraction of Data"))
 
     }else{
 
       #Name plots relative to reference plot if a reference is used
-      p1 <- layout(p = p1, title = "Beta_A Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Beta_A Standard Error Efficiency of", names(designlist)[refindex])))
-      p2 <- layout(p = p2, title = "Actual D-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("D-Efficiency of", names(designlist)[refindex])))
-      p3 <- layout(p = p3, title = "Actual I-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("I-Efficiency of", names(designlist)[refindex])))
-      p4 <- layout(p = p4, title = "Optimal Point Confidence Region Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-B Confidence Region Size Efficiency of", names(designlist)[refindex])))
-      p5 <- layout(p = p5, title = "Actual A-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-Efficiency of", names(designlist)[refindex])))
-      p6 <- layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Average Choice Set Var(p) to", names(designlist)[refindex])))
-      p7 <- layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Estimator Variance At Optimal Point to", names(designlist)[refindex])))
-      p8 <- layout(p = p8, title = "CDF of D-Efficiency Over Sampled Parameters", xaxis = list(title = "D-Efficiency"), yaxis = list(title = "Fraction of Data"))
-      p9 <- layout(p = p9, title = "CDF of I-Efficiency Over Sampled Parameters", xaxis = list(title = "I-Efficiency"), yaxis = list(title = "Fraction of Data"))
+      p1 <- plotly::layout(p = p1, title = "Beta_A Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Beta_A Standard Error Efficiency of", names(designlist)[refindex])))
+      p2 <- plotly::layout(p = p2, title = "Actual D-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("D-Efficiency of", names(designlist)[refindex])))
+      p3 <- plotly::layout(p = p3, title = "Actual I-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("I-Efficiency of", names(designlist)[refindex])))
+      p4 <- plotly::layout(p = p4, title = "Optimal Point Confidence Region Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-B Confidence Region Size Efficiency of", names(designlist)[refindex])))
+      p5 <- plotly::layout(p = p5, title = "Actual A-Efficiency Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("A-Efficiency of", names(designlist)[refindex])))
+      p6 <- plotly::layout(p = p6, title = "Average Choice Set Probability Variance Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Average Choice Set Var(p) to", names(designlist)[refindex])))
+      p7 <- plotly::layout(p = p7, title = "Response Estimator Variance at Optimal Point Under True Model", xaxis = list(title = "Euclidean Dist from design_params"), yaxis = list(title = paste("Ratio of Estimator Variance At Optimal Point to", names(designlist)[refindex])))
+      p8 <- plotly::layout(p = p8, title = "CDF of D-Efficiency Over Sampled Parameters", xaxis = list(title = "D-Efficiency"), yaxis = list(title = "Fraction of Data"))
+      p9 <- plotly::layout(p = p9, title = "CDF of I-Efficiency Over Sampled Parameters", xaxis = list(title = "I-Efficiency"), yaxis = list(title = "Fraction of Data"))
 
     }
 
@@ -418,14 +417,14 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     }
 
     ##Calculate SE of coefficient "A" normalized per number of questions asked and add to plot p1
-    # p1 <- add_lines(p = p1, name = names(plotlist)[i], x = trueframe[,c("A")],
+    # p1 <- plotly::add_lines(p = p1, name = names(plotlist)[i], x = trueframe[,c("A")],
     #                 y = (sapply(ylistloop, function(x) solve(x$info_mat)[2,2]))/
     #                   (sapply(ylistbasic, function(x) solve(x$info_mat)[2,2])))
 
     y <- sapply(ylistloop, function(x) solve(x$info_mat)[2,2])
     if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) solve(x$info_mat)[2,2]))}
 
-    p1 <- add_lines(p = p1, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
+    p1 <- plotly::add_lines(p = p1, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
     y1[[(length(y1) + 1)]] = y
 
     ##Calculate D-Optimality of design normalized per number of questions asked and add to plot p2
@@ -440,7 +439,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     if(loess_smooth_plots){
       plot_vals = loess.smooth(plot_vals$x, plot_vals$y)
     }
-    p2 <- add_lines(p = p2, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
+    p2 <- plotly::add_lines(p = p2, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
 
     y2[[(length(y2) + 1)]] = y
 
@@ -448,7 +447,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     ecdf_fun = ecdf(y)
     ecdf_x = seq(from = min(y), to = max(y), length.out = 1000)
     y = ecdf_fun(ecdf_x)
-    p8 <- add_lines(p = p8, name = names(plotlist)[i], x = ecdf_x, y = y, line = list(dash = linetype[i]))
+    p8 <- plotly::add_lines(p = p8, name = names(plotlist)[i], x = ecdf_x, y = y, line = list(dash = linetype[i]))
     y8[[(length(y8) + 1)]] = y
 
 
@@ -465,7 +464,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     if(loess_smooth_plots){
       plot_vals = loess.smooth(plot_vals$x, plot_vals$y)
     }
-    p3 <- add_lines(p = p3, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
+    p3 <- plotly::add_lines(p = p3, name = names(plotlist)[i], x = plot_vals$x, y = plot_vals$y, line = list(dash = linetype[i]))
 
     y3[[(length(y3) + 1)]] = y
 
@@ -473,42 +472,42 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     ecdf_fun = ecdf(y)
     ecdf_x = seq(from = min(y), to = max(y), length.out = 1000)
     y = ecdf_fun(ecdf_x)
-    p9 <- add_lines(p = p9, name = names(plotlist)[i], x = ecdf_x, y = y, line = list(dash = linetype[i]))
+    p9 <- plotly::add_lines(p = p9, name = names(plotlist)[i], x = ecdf_x, y = y, line = list(dash = linetype[i]))
     y9[[(length(y9) + 1)]] = y
 
 
     #Calculate determinant of covariance matrix of A and B at optimal point (proportional to confidence region volume at that point) normalized per number of questions asked
-    # p4 <- add_lines(p = p4, name = names(plotlist)[i], x = trueframe[,c("A")],
+    # p4 <- plotly::add_lines(p = p4, name = names(plotlist)[i], x = trueframe[,c("A")],
     #                 y = (sapply(ylistloop, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2)))/
     #                   (sapply(ylistbasic, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2))))
 
     y <- sapply(ylistloop, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2))
     if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2)))}
 
-    p4 <- add_lines(p = p4, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
+    p4 <- plotly::add_lines(p = p4, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
     y4[[(length(y4) + 1)]] = y
 
 
     #Calculate A-Optimality of design normalized per number of questions asked and add to plot p5
-    # p5 <- add_lines(p = p5, name = names(plotlist)[i], x = trueframe[,c("A")],
+    # p5 <- plotly::add_lines(p = p5, name = names(plotlist)[i], x = trueframe[,c("A")],
     #                 y = (sapply(ylistloop, function(x) sum(diag(solve(x$info_mat)))))/
     #                   (sapply(ylistbasic, function(x) sum(diag(solve(x$info_mat))))))
 
     y <- sapply(ylistloop, function(x) sum(diag(solve(x$info_mat))))
     if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) sum(diag(solve(x$info_mat)))))}
 
-    p5 <- add_lines(p = p5, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
+    p5 <- plotly::add_lines(p = p5, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
     y5[[(length(y5) + 1)]] = y
 
     #Calculate average question variance across design (weighted by probability of each tournament matchup occurring)
-    # p6 <- add_lines(p = p6, name = names(plotlist)[i], x = trueframe[,c("A")],
+    # p6 <- plotly::add_lines(p = p6, name = names(plotlist)[i], x = trueframe[,c("A")],
     #                 y = (sapply(ylistbasic, function(x) x$p_var))/
     #                   (sapply(ylistloop, function(x) x$p_var)))
 
     y <- sapply(ylistloop, function(x) x$p_var)
     if(!is.null(refindex)){y <- (sapply(ylistbasic, function(x) x$p_var))/y}
 
-    p6 <- add_lines(p = p6, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
+    p6 <- plotly::add_lines(p = p6, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
     y6[[(length(y6) + 1)]] = y
 
 
@@ -516,7 +515,7 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     y <- sapply(ylistloop, function(x) as.numeric((t(x$optpoint)%*%solve(x$info_mat)%*%x$optpoint)))
     if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) as.numeric((t(x$optpoint)%*%solve(x$info_mat)%*%x$optpoint))))}
 
-    p7 <- add_lines(p = p7, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
+    p7 <- plotly::add_lines(p = p7, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
     y7[[(length(y7) + 1)]] = y
 
   }
