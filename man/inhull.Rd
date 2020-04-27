@@ -4,7 +4,7 @@
 \alias{inhull}
 \title{Check if candidate points are inside, outside, or on the surface of a n-dimensional convex manifold (hull)}
 \usage{
-inhull(testpts, calpts, hull = convhulln(calpts),
+inhull(testpts, calpts, hull = geometry::convhulln(calpts),
   tol = mean(mean(abs(as.matrix(calpts)))) * sqrt(.Machine$double.eps))
 }
 \arguments{

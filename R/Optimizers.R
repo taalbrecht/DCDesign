@@ -25,20 +25,6 @@
 #'
 #' @examples
 optimizefn <- function(x, index, roworcol, designmat, base_input_range, formulacollection, scalemat = TRUE, weight = rep(1/length(formulacollection), times = length(formulacollection))){
-  #INPUTS:
-  ##x - vector of numerics - row or column of design matrix being modified
-  ##index - integer - position of row or column being modified
-  ##roworcol - character - whether to replace row or column. Uses "row" or "column" as argument choices
-  ##designmat - whole design matrix in raw variable terms
-  ##base_input_range: input type - 2 row matrix - matrix with variable minimums and maximums for base variables (variables common to all formulas in formulacollection). First row is minimum, second row is maximum. Names of colums should equal variable names used in formulas
-  ##scalemat - logical, default TRUE - whether the base variable matrix for each model should be scaled from -1 to 1 or not
-  ##formulacollection - collection of formula objects used to construct scaled model matrices. Should include the following at a minimum for linear models. Additional arguments can be included for more complex operations
-  ####inputranges - matrix - matrix with one column per variable in inputmat and minimum and maximum values in row 1 and 2, respectively
-  ####baseformula - formula - no-intercept formula of base algebraic combination variables
-  ####range - matrix - matrix with one column per variable in baseformula and minimum and maximum values in row 1 and 2, respectively
-  ####termsalt - vector, optional - names of alternate terms to replace terms in baseformula with so that the model matrix function will work. If not provided, returns scaled model matrix for baseformula
-  ####retermedformula - formula, optional - full model formula with terms replaced by altterms elements. If not provided, returns scaled model matrix for baseformula
-  ##weight - vector - weights to apply to each formula's objective function for overall objective function
 
   #Initialize with
   X <- designmat
@@ -71,7 +57,7 @@ optimizefn <- function(x, index, roworcol, designmat, base_input_range, formulac
                                                         altterms = x$termsalt, fullformulareterm = x$retermedformula))
   }else{
     #Loop through all formulas to get non-scaled design model matrices
-    Xlist <- lapply(formulacollection, function(x) model.matrix(x$fullformula, data.frame(X)))
+    Xlist <- lapply(formulacollection, function(x) stats::model.matrix(x$fullformula, data.frame(X)))
 
   }
 
@@ -140,52 +126,17 @@ optimizefn <- function(x, index, roworcol, designmat, base_input_range, formulac
 #' @examples
 optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep("D-Opt", times = length(formulalist)), startingmat = NULL, referencemat = NULL, npoints = NULL, searchdirection = "row", weight = rep(1/length(formulalist), times = length(formulalist)), randomstarts = FALSE, searchstrat = "numoptimize", candmat = NULL, cexpoints = NULL, constrainnodeslist = rep(NA, times = length(formulalist)), extraparams = NULL, scalemat = TRUE, verbose = FALSE, prevoptimobject = NULL){
 
-  #Function to optimize list of models at once (of any length):
-  #INPUTS
-  ##base_input_range: input type - 2 row matrix - matrix with variable minimums and maximums for base variables. First row is minimum, second row is maximum. Names of colums should equal variable names used in formulas
-  ##formulalist: list of formulas - list of formulas to optimize
-  ##objectivelist: list of characters - objective functions to use when optimizing each model. Options are:
-  ###D-Opt (maximizes X'X of centered and standardized model matrix)
-  ###I-Opt: minimizes the prediction variance over the design space
-  ###SSE (minimizes sum of squared error between optimized design and values in startingmat. Uses centered and standardized model matrix for calculation)
-  ##startingmat: matrix with named columns - matrix to use as a design starting point. Also used as the reference for SSE calculations when that loss function is used
-  ##referencemat: matrix with named columns - matrix used as the reference for SSE calculations when that loss function is used
-  ##npoints: integer - number of design points. Only needed if startingmat is not provided
-  ##searchdirection: character - Method used to perform optimization search. Options are:
-  ###row - optimize one row at a time
-  ###column - optimize one column at a time
-  ##weight: vector of numerics - weight for each formula's loss function to use to calculate overall loss from each loss function
-  ##randomstarts: TRUE/FALSE - whether a random start should be used for each row/column iteration through the optimizer
-  ##searchstrat: character - the type of search strategy to use. Options:
-  ###numoptimize - numeric optimization. Does not require candidate points.
-  ###fedorov - coordinate exchange. Required candidate set of points to be provided
-  ##candmat: matrix with column names corresponding to base variable names in base_input_range - matrix of candidate points used for fedorov optimization.
-  ##cexpoints: integer stating how many evenly spaced points should be used across the allowed variable range for the coordinate exchange search strategy
-  ##constrainnodeslist: list of data frames or matrices - list of constraining nodes for each formula if a rectangular space based on the base_input_range shouldn't be used. This is important for I-Optimality
-  ##extraparams: list of extra parameters required for non-linear model optimization. May contain
-  ###altvect - vector of integers - vector listing the choice set that each row belongs to for discrete choice optimizers
-  ###paramestimates - vector of numerics - vector containing the prior estimates for each coefficient in the choice model. MUST BE IN THE SAME ORDER AS WOULD BE RETURNED BY THE MODEL MATRIX FUNCTION
-  ##scalemat - logical, default TRUE - whether the base variable matrix for each model should be scaled from -1 to 1 or not
-  ##prevoptimobject - result of previous run of this function - carries fixed constants over from previous execution (formula processing, moment matrix, etc) to help speed execution. ONLY USE IF YOU ARE PASSING THE RESULT FROM A PREVIOUS RUN WITH EXACTLY THE SAME MODEL STRUCTURES AND RANGES
-  ##verbose: logical - whether to print progress statements from optimizer each time an improvement occurs
+  ##### Fixed object creation/loading
 
-
-  ##Moved to after fixed object creation so it can be generated after fixed objects are loaded
-  # #Initialize staring design if none was provided
-  # if(is.null(startingmat)){
-  #   startingmat <- apply(base_input_range, MARGIN = 2, function(x) runif(npoints, min = min(x), max = max(x)))
-  # }
-
-  ######Fixed object creation/loading
   #If previous model object was not provided, create "fixed" objects like formulas and moment matrices
   if(is.null(prevoptimobject)){
     #Extract terms only from each variable (not including interactions, etc. Used for centering and standardizing from -1 to 1 before building model matrix)
-    baseformulalist <- lapply(formulalist, function(x) as.formula(paste("~", paste(paste(attributes(terms(x))$variables)[-1], collapse = "+"), "-1")))
+    baseformulalist <- lapply(formulalist, function(x) stats::as.formula(paste("~", paste(paste(attributes(stats::terms(x))$variables)[-1], collapse = "+"), "-1")))
 
     #Reassign all terms to different variable name to make sure geometric combinations are not deconstructed
-    termslist <- lapply(formulalist, function(x) paste(attributes(terms(x))$variables)[-1])
+    termslist <- lapply(formulalist, function(x) paste(attributes(stats::terms(x))$variables)[-1])
     retermedformulalist <- lapply(formulalist, function(x) paste(x)[2])
-    retermedbaseformulalist <- lapply(formulalist, function(x) paste("~", paste(paste(attributes(terms(x))$variables)[-1], collapse = "+"), "-1"))
+    retermedbaseformulalist <- lapply(formulalist, function(x) paste("~", paste(paste(attributes(stats::terms(x))$variables)[-1], collapse = "+"), "-1"))
 
     termsaltlist <- list()
     for(j in 1:length(formulalist)){
@@ -201,8 +152,8 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
 
       }
       #Save retermed formulas in formula format
-      retermedformulalist[[j]] <- as.formula(paste("~", retermedformulalist[[j]]))
-      retermedbaseformulalist[[j]] <- as.formula(paste("~", retermedbaseformulalist[[j]]))
+      retermedformulalist[[j]] <- stats::as.formula(paste("~", retermedformulalist[[j]]))
+      retermedbaseformulalist[[j]] <- stats::as.formula(paste("~", retermedbaseformulalist[[j]]))
 
     }
 
@@ -210,9 +161,9 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
     for(i in 1:length(baseformulalist)){
 
       #Reinitialize base variable formulas using re-termed formulas so they are correct and properly eliminate unwanted geometric combinations.
-      baseformulalist[[i]] <- as.formula(paste("~", paste(termslist[[i]][termsaltlist[[i]] %in% paste(attributes(terms(retermedformulalist[[i]]))$variables)[-1]], collapse = "+"), "-1"))
+      baseformulalist[[i]] <- stats::as.formula(paste("~", paste(termslist[[i]][termsaltlist[[i]] %in% paste(attributes(stats::terms(retermedformulalist[[i]]))$variables)[-1]], collapse = "+"), "-1"))
       #Create base formulas with intercepts for algebraic rangefinding
-      baseformulaiceptlist[[i]] <- as.formula(paste("~", paste(termslist[[i]][termsaltlist[[i]] %in% paste(attributes(terms(retermedformulalist[[i]]))$variables)[-1]], collapse = "+")))
+      baseformulaiceptlist[[i]] <- stats::as.formula(paste("~", paste(termslist[[i]][termsaltlist[[i]] %in% paste(attributes(stats::terms(retermedformulalist[[i]]))$variables)[-1]], collapse = "+")))
     }
 
     #Get ranges of all base terms of each formula
@@ -231,8 +182,8 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
       if(is.na(constrainnodeslist[[i]])){
 
         #Approximate constraining node set by sampling 1000 points from base variable space and including extreme points from base variable space if no constraining nodeset was provided to the function
-        constrainnodesloop <- rbind(model.matrix(baseformulalist[[i]], data.frame(expand.grid(data.frame(base_input_range)))),
-                                    model.matrix(baseformulalist[[i]], data.frame(apply(base_input_range, MARGIN = 2, function(x) runif(1000, min = min(x), max = max(x))))))
+        constrainnodesloop <- rbind(stats::model.matrix(baseformulalist[[i]], data.frame(expand.grid(data.frame(base_input_range)))),
+                                    stats::model.matrix(baseformulalist[[i]], data.frame(apply(base_input_range, MARGIN = 2, function(x) stats::runif(1000, min = min(x), max = max(x))))))
 
       }else{
 
@@ -283,7 +234,7 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
 
   #Initialize staring design if none was provided
   if(is.null(startingmat)){
-    startingmat <- apply(base_input_range, MARGIN = 2, function(x) runif(npoints, min = min(x), max = max(x)))
+    startingmat <- apply(base_input_range, MARGIN = 2, function(x) stats::runif(npoints, min = min(x), max = max(x)))
   }
 
 
@@ -293,7 +244,7 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
     matlist <- list()
     for(i in 1:length(baseformulalist)){
 
-      matlist[[i]] <- model.matrix(baseformulalist[[i]], data.frame(referencemat))
+      matlist[[i]] <- stats::model.matrix(baseformulalist[[i]], data.frame(referencemat))
 
       #Scale from -1 to 1 if indicated by scalemat
       if(scalemat){
@@ -385,9 +336,7 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
       if(randomstarts){
 
         #optimize with randomized candidate row/column with error handling returning Inf on error for solver errors
-        loopout <- tryCatch(optim(apply(rbind(minmat[j,], maxmat[j,]), MARGIN = 2, function(x) runif(1, min = x[1], max = x[2])), # Starting values for optimizer
-                                  #runif(length(testmat)/loopcount, min = -1, max = 1),
-                                  #lower = rep(-1, length(testmat)/loopcount), upper = rep(1, length(testmat)/loopcount), #Lower and upper bounds
+        loopout <- tryCatch(stats::optim(apply(rbind(minmat[j,], maxmat[j,]), MARGIN = 2, function(x) stats::runif(1, min = x[1], max = x[2])), # Starting values for optimizer
                                   fn = optimizefn, method = "L-BFGS-B", lower = minmat[j,], upper = maxmat[j,], #Optimizer arguments
                                   index = j, roworcol = searchdirection, designmat = testmat, base_input_range = base_input_range, formulacollection = formulacollection, weight = weight, scalemat = scalemat), #Additional static arguments passed to loss function
                             error = function(x) list(value = Inf))  #Error handling to prevent solver errors from crashing looping by returning Inf so results won't be used
@@ -399,7 +348,7 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
         if(searchdirection == "column"){prevvals <- testmat[,j]}
         if(searchdirection == "coordinate"){prevvals <- testmat[j]}
 
-        loopout <- tryCatch(optim(prevvals, #Starting values for optimizer
+        loopout <- tryCatch(stats::optim(prevvals, #Starting values for optimizer
                                   fn = optimizefn, method = "L-BFGS-B", lower = minmat[j,], upper = maxmat[j,], #Optimizer arguments
                                   index = j, roworcol = searchdirection, designmat = testmat, base_input_range = base_input_range, formulacollection = formulacollection, weight = weight, scalemat = scalemat), #Additional static arguments passed to loss function
                             error = function(x) list(value = Inf))  #Error handling to prevent solver errors from crashing looping by returning Inf so results won't be used
@@ -452,7 +401,7 @@ optimizemodellist <- function(base_input_range, formulalist, objectivelist = rep
                                                           altterms = x$termsalt, fullformulareterm = x$retermedformula))
     }else{
       #Get unscaled desigm model matrices if indicated by scalemat
-      Xlist <- lapply(formulacollection, function(x) model.matrix(x$fullformula, data.frame(candmat)))
+      Xlist <- lapply(formulacollection, function(x) stats::model.matrix(x$fullformula, data.frame(candmat)))
 
     }
 

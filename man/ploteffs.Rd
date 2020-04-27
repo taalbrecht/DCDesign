@@ -33,6 +33,8 @@ ploteffs(designlist, typevec, trueframe, design_params, refindex = NULL,
   \item{"plotly"}{Returns a list of plotly graph objects where each design in designlist will have a corresponding line on the plot.}
   \item{Any other argument}{Returns a list of numeric results where each design in designlist will have a corresponding entry in the list for each metric type.}
   }}
+
+\item{loess_smooth_plots}{If TRUE, applies loess smoothing to efficiency results}
 }
 \value{
 Returns a list of plots or a list of results with the following entries
