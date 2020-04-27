@@ -16,10 +16,10 @@ customcontrsum <- function(factorin, speclevels){
   factorin <- factor(factorin, levels = speclevels)
 
       #Apply contrast sum encoding
-      contrasts(factorin) <- contr.sum(nlevels(factorin))
+      stats::contrasts(factorin) <- stats::contr.sum(nlevels(factorin))
 
       #Apply contrast column names
-      colnames(contrasts(factorin)) <- rownames(contrasts(factorin))[1:ncol(contrasts(factorin))]
+      colnames(stats::contrasts(factorin)) <- rownames(stats::contrasts(factorin))[1:ncol(stats::contrasts(factorin))]
 
       return(factorin)
 
@@ -100,7 +100,7 @@ standardize_cols <- function(StartingMat, column_names, Input_range, reverse_sta
 list_input_variables <- function(input_formula){
 
   #Pull inputs only from input_formula and count
-  Input_Func <- as.formula(paste(nlme::splitFormula(input_formula)))
+  Input_Func <- stats::as.formula(paste(nlme::splitFormula(input_formula)))
   InputVarList <- all.vars(Input_Func)
 
   # #Pull inputs only from input_formula and count - work on this
@@ -126,7 +126,7 @@ list_input_variables <- function(input_formula){
 algebraic_range <- function(base_var_range, algebraic_formula){
 
   #Pull names of each algebraic term and factor combination on input side of formula
-  algebraic_input_terms <- colnames(model.matrix(algebraic_formula, base_var_range), "factors")[-1]
+  algebraic_input_terms <- colnames(stats::model.matrix(algebraic_formula, base_var_range), "factors")[-1]
 
   #Create matrix to store min and max values for each algebraic term
   AlgebraicRange <- matrix(data = 0, nrow = 2, ncol = length(algebraic_input_terms))
@@ -169,13 +169,9 @@ algebraic_range <- function(base_var_range, algebraic_formula){
     maxvect <- as.vector(base_var_range[2,base_inputs])
 
     #Find minimum and maximum values by trying all starting combinations in expanded grid
-    AlgebraicRange["minimum",algebraic_input_terms[i]] <- min(unlist(lapply(apply(trymat, MARGIN = 1, optim, fn = optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect), "[", "value")))
-    AlgebraicRange["maximum",algebraic_input_terms[i]] <- max(unlist(lapply(apply(trymat, MARGIN = 1, optim, fn = optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect, control = list(fnscale = -1)), "[", "value")))
+    AlgebraicRange["minimum",algebraic_input_terms[i]] <- min(unlist(lapply(apply(trymat, MARGIN = 1, stats::optim, fn = optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect), "[", "value")))
+    AlgebraicRange["maximum",algebraic_input_terms[i]] <- max(unlist(lapply(apply(trymat, MARGIN = 1, stats::optim, fn = optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect, control = list(fnscale = -1)), "[", "value")))
 
-    #     #Old, less accurate code that doesn't find min and max for factor combinations
-    #     #Find minimum value for algebraic term
-    #     AlgebraicRange["minimum",algebraic_input_terms[i]] <- optim(minvect, optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect)$value
-    #     AlgebraicRange["maximum",algebraic_input_terms[i]] <- optim(maxvect, optimfunc, method = "L-BFGS-B", lower = minvect, upper = maxvect, control = list(fnscale = -1))$value
   }
 
   #Return Min and Max for Algebraic Functions
@@ -212,7 +208,7 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
   }else{
 
     #Randomly generate data subject to rectangular constraints
-    randmat <- apply(inputranges, MARGIN = 2, function(x) runif(nrand*k, min = min(x), max = max(x)))
+    randmat <- apply(inputranges, MARGIN = 2, function(x) stats::runif(nrand*k, min = min(x), max = max(x)))
 
   }
 
@@ -229,7 +225,7 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
   if(clustermethod == "ward"){
 
     #Get clusters using ward clustering and euclidean distance
-    groupid <- cutree(hclust(d = dist(randmat, method = "euclidean"), method = "ward.D"), k = k)
+    groupid <- stats::cutree(stats::hclust(d = stats::dist(randmat, method = "euclidean"), method = "ward.D"), k = k)
 
     #Initialize design matrix to store results
     outmat <- randmat[1:k,]
@@ -256,7 +252,7 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
   if(clustermethod == "kmeans"){
 
     #Apply kmeans clustering algorithm
-    groupid <- kmeans(randmat, centers = k, iter.max = 100)
+    groupid <- stats::kmeans(randmat, centers = k, iter.max = 100)
 
     if(centermethod == "centroid"){
       #Extract centroids
@@ -277,7 +273,7 @@ fastfill <- function(inputranges, constrainnodes = NULL, k, nrand = 100, scalein
   if(clustermethod == "None"){
 
     #Apply kmeans clustering algorithm
-    groupid <- kmeans(randmat, centers = k, iter.max = 100)
+    groupid <- stats::kmeans(randmat, centers = k, iter.max = 100)
 
     if(centermethod == "centroid"){
       #Extract centroids
@@ -450,7 +446,7 @@ convexuniformfill <- function(n, inputranges, constrainnodes){
   while(nrow(randmat) < n){
 
     #Randomly generate data
-    randmat <- rbind(randmat, apply(inputranges, MARGIN = 2, function(x) runif((n-nrow(randmat))*scalefactor, min = min(x), max = max(x))))
+    randmat <- rbind(randmat, apply(inputranges, MARGIN = 2, function(x) stats::runif((n-nrow(randmat))*scalefactor, min = min(x), max = max(x))))
 
     #Determine which randomly generated points are in or on the surface of the convex manifold
     outvec <- inhull(testpts = randmat, calpts = constrainnodes)
@@ -538,9 +534,9 @@ candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
       }
 
       #Calculate MaxPro optimization minimization criterion kernel (take log to nullify multiplication by combinatorial and exponentiation of 1/p)
-      tempdis=(dist(D0[tempvec,1]))^2
+      tempdis=(stats::dist(D0[tempvec,1]))^2
       for(k in 2:ncol(D0)){
-        tempdis=tempdis*(dist(D0[tempvec,k]))^2
+        tempdis=tempdis*(stats::dist(D0[tempvec,k]))^2
       }
 
       #Invert resultant distance product and get sum to get maxpro criterion kernel
@@ -560,9 +556,9 @@ candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
 
   #Calculate full MaxPro criterion
   #Calculate MaxPro optimization minimization criterion kernel
-  tempdis=(dist(D0[designvec,1]))^2
+  tempdis=(stats::dist(D0[designvec,1]))^2
   for(k in 2:ncol(D0)){
-    tempdis=tempdis*(dist(D0[designvec,k]))^2
+    tempdis=tempdis*(stats::dist(D0[designvec,k]))^2
   }
   #Change invert resultant distance product per maxpro criterion
   objfunc <- (sum(1/tempdis)/choose(n = npoints, k = 2))^(1/ncol(D0))
@@ -590,7 +586,7 @@ candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
 #'   This moment matrix estimate is typically used to calculate I-Optimality for I-Optimal design creation
 #'
 #' @examples
-designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 1000*ncol(attributes(terms(modelformula))$factors)){
+designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 1000*ncol(attributes(stats::terms(modelformula))$factors)){
 
   #Generate random data either subject to rectangular constraints or a convex hull constraint
   #Check against constraining convex manifold if provided
@@ -602,12 +598,12 @@ designmommat <- function(inputranges, modelformula, constrainnodes = NA, n = 100
   }else{
 
     #Randomly generate n datapoints subject to rectangular constraints of inputranges
-    randmat <- apply(inputranges, MARGIN = 2, function(x) runif(n, min = min(x), max = max(x)))
+    randmat <- apply(inputranges, MARGIN = 2, function(x) stats::runif(n, min = min(x), max = max(x)))
 
   }
 
   #Calculate moment matrix
-  fx <- model.matrix(modelformula, data.frame(randmat))
+  fx <- stats::model.matrix(modelformula, data.frame(randmat))
 
   #Calculate moment matrix
   MomentMatrix <- (t(fx)%*%fx)/n
@@ -636,7 +632,7 @@ Xmat <- function(inputmat, inputranges, baseformula, baseformrange, altterms = N
 
   #Create model matrix: X
   #Translate to second formula space
-  X <- model.matrix(baseformula, data.frame(scale(
+  X <- stats::model.matrix(baseformula, data.frame(scale(
     scale(inputmat, center = FALSE, scale = 2/apply(inputranges, MARGIN = 2, function(x) x[2] - x[1])),
     center = -apply(inputranges, MARGIN = 2, mean), scale = FALSE)))
 
@@ -651,7 +647,7 @@ Xmat <- function(inputmat, inputranges, baseformula, baseformrange, altterms = N
     colnames(X) <- altterms[1:ncol(X)]
 
     #Create full model matrix - need to update by substituting variables. Won't work right now
-    X <- model.matrix(fullformulareterm, data.frame(X))
+    X <- stats::model.matrix(fullformulareterm, data.frame(X))
 
   }
 
