@@ -508,12 +508,12 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     y6[[(length(y6) + 1)]] = y
 
 
-    #Calculate fit variance at optimal point for relative size comparison
-    y <- sapply(ylistloop, function(x) as.numeric((t(x$optpoint)%*%solve(x$info_mat)%*%x$optpoint)))
-    if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) as.numeric((t(x$optpoint)%*%solve(x$info_mat)%*%x$optpoint))))}
-
-    p7 <- plotly::add_lines(p = p7, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
-    y7[[(length(y7) + 1)]] = y
+    # #Calculate fit variance at optimal point for relative size comparison
+    # y <- sapply(ylistloop, function(x) as.numeric((t(x$optpoint)%*%solve(x$info_mat)%*%x$optpoint)))
+    # if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) as.numeric((t(x$optpoint)%*%solve(x$info_mat)%*%x$optpoint))))}
+    #
+    # p7 <- plotly::add_lines(p = p7, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
+    # y7[[(length(y7) + 1)]] = y
 
   }
 
