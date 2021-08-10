@@ -477,12 +477,12 @@ ploteffs <- function(designlist, typevec, trueframe, design_params, refindex = N
     # p4 <- plotly::add_lines(p = p4, name = names(plotlist)[i], x = trueframe[,c("A")],
     #                 y = (sapply(ylistloop, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2)))/
     #                   (sapply(ylistbasic, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2))))
-
-    y <- sapply(ylistloop, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2))
-    if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2)))}
-
-    p4 <- plotly::add_lines(p = p4, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
-    y4[[(length(y4) + 1)]] = y
+#
+#     y <- sapply(ylistloop, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2))
+#     if(!is.null(refindex)){y <- y/(sapply(ylistbasic, function(x) (det(t(x$gradmat)%*%solve(x$info_mat)%*%x$gradmat))^(1/2)))}
+#
+#     p4 <- plotly::add_lines(p = p4, name = names(plotlist)[i], x = x_plot_vals, y = y, line = list(dash = linetype[i]))
+#     y4[[(length(y4) + 1)]] = y
 
 
     #Calculate A-Optimality of design normalized per number of questions asked and add to plot p5
