@@ -510,7 +510,10 @@ candsetmaxpro <- function(candmat, npoints = NULL, groupid = NULL){
 
   if(is.null(groupid)){
 
-    designvec <- sample(c(1:nrow(D0)), npoints)
+    initial_replacement = FALSE
+    if(nrow(D0) < npoints){initial_replacement = TRUE}
+
+    designvec <- sample(c(1:nrow(D0)), npoints, replace = initial_replacement)
 
   }else{
     designvec <- sapply(c(1:npoints), function(x) sample(which(groupid == x), size = 1))
